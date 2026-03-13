@@ -1498,29 +1498,96 @@ let narIdx = 0;
 let selectedVoice = null;
 let mouthInterval = null;
 
-/* ── Seleccionar la mejor voz masculina en español ── */
+/* ── Detección de plataforma ── */
+const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isAndroid = /android/i.test(navigator.userAgent);
+
+/* ── Parámetros según plataforma ── */
+function voiceParams(){
+  if(isIOS)     return { lang:'es-MX', rate:0.82, pitch:0.75, volume:1 };
+  if(isAndroid) return { lang:'es-US', rate:0.88, pitch:0.70, volume:1 };
+  return              { lang:'es-CO', rate:0.88, pitch:0.95, volume:1 };
+}
+
+/* ── Excluir voces femeninas ── */
+function feminineVoice(v){
+  const n = v.name.toLowerCase();
+  return n.includes('female') || n.includes('mónica') || n.includes('monica') ||
+         n.includes('paulina') || n.includes('helena') || n.includes('sabina') ||
+         n.includes('paloma')  || n.includes('luciana') || n.includes('maria') ||
+         n.includes('isabella')|| n.includes('rosa')    || n.includes('daniela');
+}
+
+/* ── Seleccionar mejor voz masculina según plataforma ── */
 function pickVoice(){
   const all = synth.getVoices();
-  const priority = [
-    v => v.name.includes('Google') && v.lang.startsWith('es') && v.name.toLowerCase().includes('male'),
-    v => v.name === 'Google español' || v.name === 'Google Spanish',
-    v => v.name.includes('Jorge'),
-    v => v.name.includes('Diego'),
-    v => v.name.includes('Carlos'),
-    v => v.name.includes('Andrés') || v.name.includes('Andres'),
-    v => v.name.includes('Pablo'),
-    v => v.name.includes('Google') && v.lang.startsWith('es'),
-    v => v.lang === 'es-CO',
-    v => v.lang === 'es-MX',
-    v => v.lang === 'es-US',
-    v => v.lang.startsWith('es'),
-  ];
+  if(!all.length) return;
+
+  let priority;
+  if(isIOS){
+    priority = [
+      v => v.name === 'Diego',
+      v => v.name === 'Carlos',
+      v => v.name === 'Jorge',
+      v => v.name === 'Andrés' || v.name === 'Andres',
+      v => v.name === 'Juan',
+      v => v.name === 'Matías' || v.name === 'Matias',
+      v => v.lang === 'es-MX' && !feminineVoice(v),
+      v => v.lang === 'es-US' && !feminineVoice(v),
+      v => v.lang.startsWith('es') && !feminineVoice(v),
+      v => v.lang.startsWith('es'),
+    ];
+  } else if(isAndroid){
+    priority = [
+      v => v.name.includes('Google') && v.lang.startsWith('es') && !feminineVoice(v),
+      v => v.name === 'Google español' || v.name === 'Google Spanish',
+      v => v.name.includes('Jorge'),
+      v => v.name.includes('Diego'),
+      v => v.name.includes('Carlos'),
+      v => v.lang === 'es-US' && !feminineVoice(v),
+      v => v.lang === 'es-MX' && !feminineVoice(v),
+      v => v.lang.startsWith('es') && !feminineVoice(v),
+      v => v.lang.startsWith('es'),
+    ];
+  } else {
+    priority = [
+      v => v.name.includes('Google') && v.lang.startsWith('es') && v.name.toLowerCase().includes('male'),
+      v => v.name === 'Google español' || v.name === 'Google Spanish',
+      v => v.name.includes('Microsoft') && (v.name.includes('Jorge') || v.name.includes('Raul') || v.name.includes('Pablo')),
+      v => v.name.includes('Jorge'),
+      v => v.name.includes('Diego'),
+      v => v.name.includes('Carlos'),
+      v => v.name.includes('Andrés') || v.name.includes('Andres'),
+      v => v.name.includes('Pablo'),
+      v => v.name.includes('Google') && v.lang.startsWith('es'),
+      v => v.lang === 'es-CO',
+      v => v.lang === 'es-MX',
+      v => v.lang === 'es-US',
+      v => v.lang.startsWith('es'),
+    ];
+  }
   for(const fn of priority){
     const v = all.find(fn);
     if(v){ selectedVoice = v; return; }
   }
   selectedVoice = null;
 }
+
+/* ── Cargar voces con polling (necesario en iOS Safari) ── */
+function ensureVoices(cb){
+  if(synth.getVoices().length){ pickVoice(); if(cb) cb(); return; }
+  if(speechSynthesis.onvoiceschanged !== undefined){
+    speechSynthesis.onvoiceschanged = ()=>{ pickVoice(); if(cb) cb(); };
+  }
+  let tries = 0;
+  const poll = setInterval(()=>{
+    tries++;
+    if(synth.getVoices().length){ pickVoice(); if(cb) cb(); clearInterval(poll); return; }
+    if(tries > 20) clearInterval(poll);
+  }, 200);
+}
+
+ensureVoices();
 
 /* ── Guiones pedagógicos escritos a mano, igual que en Integrales ── */
 const NARRATION = {
@@ -1537,35 +1604,35 @@ const NARRATION = {
     {t:"La derivada parcial respecto a y es cinco.", i:2},
   ],
   1:[
-    {t:"Segundo ejercicio: x cuadrado más y cuadrado. Función muy clásica.", i:-1},
-    {t:"Respecto a x: y cuadrado es constante, da cero.", i:0},
+    {t:"Segundo ejercicio: x cuadrado más ye cuadrado. Función muy clásica.", i:-1},
+    {t:"Respecto a x: ye cuadrado es constante, da cero.", i:0},
     {t:"La derivada de x cuadrado es dos x.", i:1},
   ],
   nary1:[
     {t:"Respecto a y: x cuadrado es constante, da cero.", i:0},
-    {t:"La derivada de y cuadrado es dos y.", i:1},
+    {t:"La derivada de ye cuadrado es dos y.", i:1},
   ],
   2:[
-    {t:"Polinomio con tres términos: cuatro x al cubo, menos dos y cuadrado, más siete.", i:-1},
-    {t:"Respecto a x: solo derivamos los términos con x. Dos y cuadrado da cero. El siete también.", i:0},
+    {t:"Polinomio con tres términos: cuatro x al cubo, menos dos ye cuadrado, más siete.", i:-1},
+    {t:"Respecto a x: solo derivamos los términos con x. Dos ye cuadrado da cero. El siete también.", i:0},
     {t:"Cuatro x al cubo derivado es doce x al cuadrado. Bajamos el tres y multiplicamos por cuatro.", i:1},
   ],
   nary2:[
-    {t:"Respecto a y: cuatro x al cubo es constante, da cero. Derivamos dos y cuadrado.", i:0},
-    {t:"La derivada de dos y cuadrado es cuatro y. El siete sigue dando cero.", i:1},
+    {t:"Respecto a y: cuatro x al cubo es constante, da cero. Derivamos dos ye cuadrado.", i:0},
+    {t:"La derivada de dos ye cuadrado es cuatro y. El siete sigue dando cero.", i:1},
   ],
   3:[
-    {t:"Función con términos mixtos: x cuadrado y más x y cuadrado. Dos términos con ambas variables.", i:-1},
-    {t:"Respecto a x: en x cuadrado y, la y actúa como coeficiente. Derivamos x cuadrado y obtenemos dos x y.", i:0},
-    {t:"En x y cuadrado, y cuadrado es el coeficiente. Derivamos x y obtenemos y cuadrado.", i:1},
+    {t:"Función con términos mixtos: x cuadrado y más x ye cuadrado. Dos términos con ambas variables.", i:-1},
+    {t:"Respecto a x: en x cuadrado y, la y actúa como coeficiente. Derivamos x cuadrado y obtenemos dos x ye.", i:0},
+    {t:"En x ye cuadrado, ye cuadrado es el coeficiente. Derivamos x y obtenemos ye cuadrado.", i:1},
     {t:"Sumamos los dos resultados.", i:2},
-    {t:"La derivada respecto a x es dos x y más y cuadrado.", i:3},
+    {t:"La derivada respecto a x es dos x y más ye cuadrado.", i:3},
   ],
   nary3:[
     {t:"Respecto a y: en x cuadrado y, x cuadrado es el coeficiente. Derivamos y y obtenemos x cuadrado.", i:0},
-    {t:"En x y cuadrado, x es el coeficiente. Derivamos y cuadrado y obtenemos dos x y.", i:1},
+    {t:"En x ye cuadrado, x es el coeficiente. Derivamos ye cuadrado y obtenemos dos x ye.", i:1},
     {t:"Sumamos los resultados.", i:2},
-    {t:"La derivada respecto a y es x cuadrado más dos x y.", i:3},
+    {t:"La derivada respecto a y es x cuadrado más dos x ye.", i:3},
   ],
   4:[
     {t:"Función exponencial: e elevado a x más y. Usamos la regla de la cadena.", i:-1},
@@ -1578,15 +1645,15 @@ const NARRATION = {
     {t:"La derivada respecto a y también es e a la x más y. Tiene sentido por simetría.", i:1},
   ],
   5:[
-    {t:"Seno de x más coseno de y. Dos funciones trigonométricas básicas.", i:-1},
+    {t:"Seno de x más coseno de ye. Dos funciones trigonométricas básicas.", i:-1},
     {t:"Respecto a x: coseno de y es constante, da cero. Derivamos seno de x.", i:0},
     {t:"La derivada del seno es el coseno. Queda coseno de x.", i:1},
     {t:"La derivada respecto a x es coseno de x.", i:2},
   ],
   nary5:[
-    {t:"Respecto a y: seno de x es constante, da cero. Derivamos coseno de y.", i:0},
-    {t:"La derivada del coseno es menos el seno. Queda menos seno de y.", i:1},
-    {t:"La derivada respecto a y es menos seno de y.", i:2},
+    {t:"Respecto a y: seno de x es constante, da cero. Derivamos coseno de ye.", i:0},
+    {t:"La derivada del coseno es menos el seno. Queda menos seno de ye.", i:1},
+    {t:"La derivada respecto a y es menos seno de ye.", i:2},
   ],
   6:[
     {t:"Dos exponenciales: e a la dos x más e a la tres y.", i:-1},
@@ -1600,36 +1667,36 @@ const NARRATION = {
     {t:"La derivada respecto a y es tres e a la tres y.", i:2},
   ],
   7:[
-    {t:"Logaritmo natural de x cuadrado más y cuadrado. Cadena con el logaritmo.", i:-1},
+    {t:"Logaritmo natural de x cuadrado más ye cuadrado. Cadena con el logaritmo.", i:-1},
     {t:"La derivada de logaritmo de u es uno sobre u, por la derivada interna.", i:0},
-    {t:"La derivada interna de x cuadrado más y cuadrado respecto a x es dos x.", i:1},
-    {t:"Queda dos x sobre x cuadrado más y cuadrado.", i:2},
-    {t:"La derivada respecto a x es dos x sobre x cuadrado más y cuadrado.", i:3},
+    {t:"La derivada interna de x cuadrado más ye cuadrado respecto a x es dos x.", i:1},
+    {t:"Queda dos x sobre x cuadrado más ye cuadrado.", i:2},
+    {t:"La derivada respecto a x es dos x sobre x cuadrado más ye cuadrado.", i:3},
   ],
   nary7:[
     {t:"Respecto a y: la derivada interna es dos y.", i:0},
-    {t:"Queda dos y sobre x cuadrado más y cuadrado.", i:1},
+    {t:"Queda dos y sobre x cuadrado más ye cuadrado.", i:1},
     {t:"Nota la simetría perfecta entre las dos derivadas.", i:2},
   ],
   8:[
-    {t:"Producto de funciones separadas: e a la x por seno de y.", i:-1},
+    {t:"Producto de funciones separadas: e a la x por seno de ye.", i:-1},
     {t:"Respecto a x: seno de y es constante y actúa como coeficiente. Derivamos e a la x.", i:0},
     {t:"La derivada de e a la x es e a la x. El coeficiente seno de y se mantiene.", i:1},
-    {t:"La derivada respecto a x es e a la x por seno de y.", i:2},
+    {t:"La derivada respecto a x es e a la x por seno de ye.", i:2},
   ],
   nary8:[
-    {t:"Respecto a y: e a la x es el coeficiente. Derivamos seno de y.", i:0},
+    {t:"Respecto a y: e a la x es el coeficiente. Derivamos seno de ye.", i:0},
     {t:"La derivada del seno es el coseno. El coeficiente e a la x se mantiene.", i:1},
-    {t:"La derivada respecto a y es e a la x por coseno de y.", i:2},
+    {t:"La derivada respecto a y es e a la x por coseno de ye.", i:2},
   ],
   9:[
     {t:"Función racional: x y sobre x más y. Aplicamos la regla del cociente.", i:-1},
-    {t:"Numerador u igual a x y, denominador v igual a x más y.", i:0},
+    {t:"Numerador u igual a x ye, denominador v igual a x más y.", i:0},
     {t:"Respecto a x: la derivada de u es y. La derivada de v es uno.", i:1},
     {t:"Aplicamos la fórmula: u prima v menos u v prima, entre v cuadrado.", i:2},
     {t:"Sustituimos: y por la suma, menos x y por uno.", i:3},
-    {t:"Expandimos: x y más y cuadrado menos x y. Los x y se cancelan.", i:4},
-    {t:"La derivada respecto a x es y cuadrado sobre la suma al cuadrado.", i:5},
+    {t:"Expandimos: x y más ye cuadrado menos x ye. Los x y se cancelan.", i:4},
+    {t:"La derivada respecto a x es ye cuadrado sobre la suma al cuadrado.", i:5},
   ],
   nary9:[
     {t:"Respecto a y: la derivada de u es x. La derivada de v es uno.", i:0},
@@ -1638,50 +1705,50 @@ const NARRATION = {
     {t:"La derivada respecto a y es x cuadrado sobre la suma al cuadrado.", i:3},
   ],
   10:[
-    {t:"Seno del producto x y. Regla de la cadena sobre el argumento compuesto.", i:-1},
-    {t:"El argumento del seno es u igual a x y.", i:0},
-    {t:"Respecto a x: derivada exterior es coseno de x y. La derivada interna de x y respecto a x es y.", i:1},
+    {t:"Seno del producto x ye. Regla de la cadena sobre el argumento compuesto.", i:-1},
+    {t:"El argumento del seno es u igual a x ye.", i:0},
+    {t:"Respecto a x: derivada exterior es coseno de x ye. La derivada interna de x y respecto a x es y.", i:1},
     {t:"Multiplicamos las dos piezas.", i:2},
-    {t:"La derivada respecto a x es y por coseno de x y.", i:3},
+    {t:"La derivada respecto a x es y por coseno de x ye.", i:3},
   ],
   nary10:[
     {t:"Respecto a y: misma cadena. La derivada interna de x y respecto a y es x.", i:0},
-    {t:"La derivada respecto a y es x por coseno de x y.", i:1},
+    {t:"La derivada respecto a y es x por coseno de x ye.", i:1},
   ],
   11:[
-    {t:"Exponencial con producto en el exponente: e a la x y. Cadena.", i:-1},
-    {t:"El argumento es u igual a x y.", i:0},
+    {t:"Exponencial con producto en el exponente: e a la x ye. Cadena.", i:-1},
+    {t:"El argumento es u igual a x ye.", i:0},
     {t:"Respecto a x: la derivada de e a la u es e a la u por la derivada interna. La derivada de x y respecto a x es y.", i:1},
-    {t:"La derivada respecto a x es y por e a la x y.", i:2},
+    {t:"La derivada respecto a x es y por e a la x ye.", i:2},
   ],
   nary11:[
     {t:"Respecto a y: la derivada interna de x y respecto a y es x.", i:0},
-    {t:"La derivada respecto a y es x por e a la x y.", i:1},
+    {t:"La derivada respecto a y es x por e a la x ye.", i:1},
   ],
   12:[
     {t:"Arcotangente de y sobre x. Cadena con función inversa trigonométrica.", i:-1},
     {t:"La derivada de arcotangente de u es uno sobre uno más u cuadrado, por la derivada interna.", i:0},
     {t:"Respecto a x: la derivada interna de y sobre x es menos y sobre x cuadrado.", i:1},
-    {t:"Calculamos uno más y cuadrado sobre x cuadrado con denominador común.", i:2},
-    {t:"Uno más y cuadrado sobre x cuadrado nos da x cuadrado más y cuadrado, sobre x cuadrado.", i:3},
+    {t:"Calculamos uno más ye cuadrado sobre x cuadrado con denominador común.", i:2},
+    {t:"Uno más ye cuadrado sobre x cuadrado nos da x cuadrado más ye cuadrado, sobre x cuadrado.", i:3},
     {t:"El recíproco es x cuadrado sobre la suma. Multiplicamos por menos y sobre x cuadrado.", i:4},
-    {t:"La derivada respecto a x es menos y sobre x cuadrado más y cuadrado.", i:5},
+    {t:"La derivada respecto a x es menos y sobre x cuadrado más ye cuadrado.", i:5},
   ],
   nary12:[
     {t:"Respecto a y: la derivada interna de y sobre x respecto a y es uno sobre x.", i:0},
     {t:"Multiplicamos el recíproco por uno sobre x.", i:1},
-    {t:"La derivada respecto a y es x sobre x cuadrado más y cuadrado.", i:2},
+    {t:"La derivada respecto a y es x sobre x cuadrado más ye cuadrado.", i:2},
   ],
   13:[
-    {t:"Potencia con producto de variables: x cuadrado por y al cubo.", i:-1},
-    {t:"Respecto a x: y al cubo actúa como coeficiente. Derivamos x cuadrado.", i:0},
-    {t:"La derivada de x cuadrado es dos x. Multiplicamos por y al cubo.", i:1},
-    {t:"La derivada respecto a x es dos x y al cubo.", i:2},
+    {t:"Potencia con producto de variables: x cuadrado por ye al cubo.", i:-1},
+    {t:"Respecto a x: ye al cubo actúa como coeficiente. Derivamos x cuadrado.", i:0},
+    {t:"La derivada de x cuadrado es dos x. Multiplicamos por ye al cubo.", i:1},
+    {t:"La derivada respecto a x es dos x ye al cubo.", i:2},
   ],
   nary13:[
-    {t:"Respecto a y: x cuadrado actúa como coeficiente. Derivamos y al cubo.", i:0},
-    {t:"La derivada de y al cubo es tres y cuadrado. Multiplicamos por x cuadrado.", i:1},
-    {t:"La derivada respecto a y es tres x cuadrado y cuadrado.", i:2},
+    {t:"Respecto a y: x cuadrado actúa como coeficiente. Derivamos ye al cubo.", i:0},
+    {t:"La derivada de ye al cubo es tres ye cuadrado. Multiplicamos por x cuadrado.", i:1},
+    {t:"La derivada respecto a y es tres x cuadrado ye cuadrado.", i:2},
   ],
   14:[
     {t:"Potencia de suma: x más y, todo a la cuarta. Cadena.", i:-1},
@@ -1697,8 +1764,8 @@ const NARRATION = {
   15:[
     {t:"Seno de x cuadrado y. El argumento del seno es un producto mixto.", i:-1},
     {t:"Identificamos u igual a x cuadrado y.", i:0},
-    {t:"Respecto a x: derivada exterior es coseno de x cuadrado y. La derivada interna de x cuadrado y respecto a x: y es constante, derivamos x cuadrado, da dos x y.", i:1},
-    {t:"Multiplicamos coseno de x cuadrado y, por dos x y.", i:2},
+    {t:"Respecto a x: derivada exterior es coseno de x cuadrado y. La derivada interna de x cuadrado y respecto a x: y es constante, derivamos x cuadrado, da dos x ye.", i:1},
+    {t:"Multiplicamos coseno de x cuadrado y, por dos x ye.", i:2},
     {t:"La derivada respecto a x es dos x y por coseno de x cuadrado y.", i:3},
   ],
   nary15:[
@@ -1719,11 +1786,11 @@ const NARRATION = {
     {t:"La derivada respecto a y es dos seno de tres x menos dos y.", i:2},
   ],
   17:[
-    {t:"Raíz cuadrada de x cuadrado más y cuadrado. Cadena con la raíz.", i:-1},
+    {t:"Raíz cuadrada de x cuadrado más ye cuadrado. Cadena con la raíz.", i:-1},
     {t:"Reescribimos la raíz como u a la un medio.", i:0},
     {t:"Respecto a x: la derivada exterior es un medio por u a la menos un medio. La derivada interna es dos x.", i:1},
     {t:"Un medio por dos x sobre raíz. El dos se cancela con el medio.", i:2},
-    {t:"La derivada respecto a x es x sobre la raíz de x cuadrado más y cuadrado.", i:3},
+    {t:"La derivada respecto a x es x sobre la raíz de x cuadrado más ye cuadrado.", i:3},
   ],
   nary17:[
     {t:"Respecto a y: la derivada interna es dos y.", i:0},
@@ -1750,28 +1817,28 @@ const NARRATION = {
     {t:"La derivada respecto a x es secante cuadrada de x sobre y, dividido entre y.", i:2},
   ],
   nary19:[
-    {t:"Respecto a y: la derivada interna de x sobre y respecto a y: x es constante, derivamos y a la menos uno, da menos x sobre y cuadrado.", i:0},
-    {t:"La derivada respecto a y es menos x sobre y cuadrado, multiplicado por secante cuadrada de x sobre y.", i:1},
+    {t:"Respecto a y: la derivada interna de x sobre y respecto a y: x es constante, derivamos ye a la menos uno, da menos x sobre ye cuadrado.", i:0},
+    {t:"La derivada respecto a y es menos x sobre ye cuadrado, multiplicado por secante cuadrada de x sobre y.", i:1},
   ],
   20:[
-    {t:"Cociente con polinomio mixto: x cuadrado sobre y cuadrado más uno.", i:-1},
-    {t:"Numerador u igual a x cuadrado, denominador v igual a y cuadrado más uno.", i:0},
+    {t:"Cociente con polinomio mixto: x cuadrado sobre ye cuadrado más uno.", i:-1},
+    {t:"Numerador u igual a x cuadrado, denominador v igual a ye cuadrado más uno.", i:0},
     {t:"Respecto a x: la derivada de u es dos x. La derivada de v respecto a x es cero, porque v solo tiene y.", i:1},
     {t:"La fórmula del cociente: u prima v menos u v prima, entre v cuadrado.", i:2},
     {t:"Queda dos x por v cuadrado más uno, menos x cuadrado por cero.", i:3},
     {t:"El segundo término desaparece.", i:4},
-    {t:"La derivada respecto a x es dos x sobre y cuadrado más uno.", i:5},
+    {t:"La derivada respecto a x es dos x sobre ye cuadrado más uno.", i:5},
   ],
   nary20:[
     {t:"Respecto a y: la derivada de u respecto a y es cero. La derivada de v es dos y.", i:0},
     {t:"Queda cero menos x cuadrado por dos y, entre v cuadrado.", i:1},
     {t:"Simplificamos el primer término que es cero.", i:2},
-    {t:"La derivada respecto a y es menos dos x cuadrado y, sobre la cantidad y cuadrado más uno al cuadrado.", i:3},
+    {t:"La derivada respecto a y es menos dos x cuadrado y, sobre la cantidad ye cuadrado más uno al cuadrado.", i:3},
   ],
   21:[
     {t:"Logaritmo de la raíz cuadrada de x cuadrado y. Simplificamos con propiedades del logaritmo.", i:-1},
     {t:"La raíz cuadrada es la potencia un medio. El logaritmo baja el exponente.", i:0},
-    {t:"Queda un medio por logaritmo de x cuadrado y. Separamos: logaritmo de x cuadrado más logaritmo de y.", i:1},
+    {t:"Queda un medio por logaritmo de x cuadrado y. Separamos: logaritmo de x cuadrado más logaritmo de ye.", i:1},
     {t:"Respecto a x: derivamos un medio por dos logaritmo de x. La derivada de logaritmo de x es uno sobre x.", i:2},
     {t:"Un medio por dos sobre x. El dos se cancela con el dos del logaritmo.", i:3},
     {t:"La derivada respecto a x es uno sobre x.", i:4},
@@ -1782,39 +1849,39 @@ const NARRATION = {
     {t:"La derivada respecto a y es uno sobre dos y.", i:2},
   ],
   22:[
-    {t:"Coseno al cuadrado de x y. Doble cadena: la potencia y el coseno.", i:-1},
-    {t:"Identificamos f igual a u cuadrado, donde u es coseno de x y.", i:0},
+    {t:"Coseno al cuadrado de x ye. Doble cadena: la potencia y el coseno.", i:-1},
+    {t:"Identificamos f igual a u cuadrado, donde u es coseno de x ye.", i:0},
     {t:"Respecto a x: primera cadena, la derivada de u cuadrado es dos u por u prima.", i:1},
-    {t:"Segunda cadena, la derivada del coseno de x y es menos seno de x y, por la derivada interna y.", i:2},
-    {t:"Multiplicamos: dos coseno de x y, por menos seno de x y, por y.", i:3},
+    {t:"Segunda cadena, la derivada del coseno de x y es menos seno de x ye, por la derivada interna y.", i:2},
+    {t:"Multiplicamos: dos coseno de x ye, por menos seno de x ye, por ye.", i:3},
     {t:"Usamos la identidad dos seno coseno igual a seno del ángulo doble.", i:4},
-    {t:"La derivada respecto a x es menos y seno de dos x y.", i:5},
+    {t:"La derivada respecto a x es menos y seno de dos x ye.", i:5},
   ],
   nary22:[
     {t:"Respecto a y: misma doble cadena. La derivada interna de x y respecto a y es x.", i:0},
-    {t:"Multiplicamos: dos coseno de x y, por menos seno de x y, por x.", i:1},
-    {t:"La derivada respecto a y es menos x seno de dos x y.", i:2},
+    {t:"Multiplicamos: dos coseno de x ye, por menos seno de x ye, por x.", i:1},
+    {t:"La derivada respecto a y es menos x seno de dos x ye.", i:2},
   ],
   23:[
-    {t:"Dos términos mixtos: x cuadrado y cuadrado más x al cubo.", i:-1},
-    {t:"Respecto a x: en el primer término, y cuadrado es el coeficiente. Derivamos x cuadrado, da dos x.", i:0},
+    {t:"Dos términos mixtos: x cuadrado ye cuadrado más x al cubo.", i:-1},
+    {t:"Respecto a x: en el primer término, ye cuadrado es el coeficiente. Derivamos x cuadrado, da dos x.", i:0},
     {t:"En el segundo término, derivamos x al cubo, da tres x cuadrado.", i:1},
     {t:"Sumamos los resultados.", i:2},
-    {t:"La derivada respecto a x es dos x y cuadrado más tres x cuadrado.", i:3},
+    {t:"La derivada respecto a x es dos x ye cuadrado más tres x cuadrado.", i:3},
   ],
   nary23:[
-    {t:"Respecto a y: en el primer término, x cuadrado es el coeficiente. Derivamos y cuadrado, da dos y.", i:0},
+    {t:"Respecto a y: en el primer término, x cuadrado es el coeficiente. Derivamos ye cuadrado, da dos y.", i:0},
     {t:"El segundo término x al cubo no tiene y, su derivada es cero.", i:1},
     {t:"La derivada respecto a y es dos x cuadrado y.", i:2},
   ],
   24:[
-    {t:"Cociente con polinomios mixtos: x cuadrado menos y cuadrado, sobre x cuadrado más y cuadrado.", i:-1},
-    {t:"Identificamos u igual a x cuadrado menos y cuadrado, v igual a x cuadrado más y cuadrado.", i:0},
+    {t:"Cociente con polinomios mixtos: x cuadrado menos ye cuadrado, sobre x cuadrado más ye cuadrado.", i:-1},
+    {t:"Identificamos u igual a x cuadrado menos ye cuadrado, v igual a x cuadrado más ye cuadrado.", i:0},
     {t:"Respecto a x: u prima es dos x, v prima también es dos x.", i:1},
     {t:"Aplicamos la fórmula del cociente: dos x por v, menos u por dos x.", i:2},
-    {t:"Factorizamos dos x. Adentro queda v menos u, que es dos y cuadrado.", i:3},
+    {t:"Factorizamos dos x. Adentro queda v menos u, que es dos ye cuadrado.", i:3},
     {t:"Dividimos todo entre v cuadrado.", i:4},
-    {t:"La derivada respecto a x es cuatro x y cuadrado sobre v al cuadrado.", i:5},
+    {t:"La derivada respecto a x es cuatro x ye cuadrado sobre v al cuadrado.", i:5},
   ],
   nary24:[
     {t:"Respecto a y: u prima es menos dos y, v prima es dos y.", i:0},
@@ -1833,21 +1900,21 @@ const NARRATION = {
   nary25:[
     {t:"Respecto a y: x a los dos tercios es el coeficiente. Derivamos y a los tres medios.", i:0},
     {t:"Tres medios menos uno es un medio. El coeficiente que baja es tres medios.", i:1},
-    {t:"La derivada respecto a y es tres medios por x a los dos tercios por y a la un medio.", i:2},
+    {t:"La derivada respecto a y es tres medios por x a los dos tercios por ye a la un medio.", i:2},
   ],
   26:[
-    {t:"Seno al cuadrado de x y. Doble cadena: la potencia cuadrada y el seno.", i:-1},
-    {t:"Identificamos f igual a u cuadrado, donde u es seno de x y.", i:0},
-    {t:"Respecto a x: primera cadena da dos seno de x y, por la derivada del seno.", i:1},
-    {t:"Segunda cadena: la derivada del seno de x y es coseno de x y, por la derivada interna.", i:2},
+    {t:"Seno al cuadrado de x ye. Doble cadena: la potencia cuadrada y el seno.", i:-1},
+    {t:"Identificamos f igual a u cuadrado, donde u es seno de x ye.", i:0},
+    {t:"Respecto a x: primera cadena da dos seno de x ye, por la derivada del seno.", i:1},
+    {t:"Segunda cadena: la derivada del seno de x y es coseno de x ye, por la derivada interna.", i:2},
     {t:"La derivada interna de x y respecto a x es y.", i:3},
     {t:"Multiplicamos las tres piezas: dos seno, coseno, y y.", i:4},
     {t:"Usamos la identidad: dos seno coseno del mismo argumento es seno del ángulo doble.", i:5},
-    {t:"La derivada respecto a x es y por seno de dos x y.", i:6},
+    {t:"La derivada respecto a x es y por seno de dos x ye.", i:6},
   ],
   nary26:[
     {t:"Respecto a y: exactamente el mismo proceso. La derivada interna de x y respecto a y es x.", i:0},
-    {t:"La derivada respecto a y es x por seno de dos x y.", i:1},
+    {t:"La derivada respecto a y es x por seno de dos x ye.", i:1},
   ],
   27:[
     {t:"Exponencial con cociente como argumento: e a la x sobre y.", i:-1},
@@ -1857,9 +1924,9 @@ const NARRATION = {
     {t:"La derivada respecto a x es e a la x sobre y, dividido entre y.", i:3},
   ],
   nary27:[
-    {t:"Respecto a y: la derivada de x sobre y respecto a y. X es constante, derivamos y a la menos uno.", i:0},
-    {t:"La derivada de y a la menos uno es menos y a la menos dos. Queda menos x sobre y cuadrado.", i:1},
-    {t:"La derivada respecto a y es menos x sobre y cuadrado, multiplicado por e a la x sobre y.", i:2},
+    {t:"Respecto a y: la derivada de x sobre y respecto a y. X es constante, derivamos ye a la menos uno.", i:0},
+    {t:"La derivada de ye a la menos uno es menos ye a la menos dos. Queda menos x sobre ye cuadrado.", i:1},
+    {t:"La derivada respecto a y es menos x sobre ye cuadrado, multiplicado por e a la x sobre y.", i:2},
   ],
   28:[
     {t:"Producto con arcoseno: x por arcoseno de y sobre x. Uno de los más complejos.", i:-1},
@@ -1867,27 +1934,27 @@ const NARRATION = {
     {t:"U prima es uno. Para v prima aplicamos la cadena: la derivada del arcoseno de u es uno sobre raíz de uno menos u cuadrado.", i:1},
     {t:"La derivada interna de y sobre x respecto a x: y es constante, derivamos x a la menos uno, da menos y sobre x cuadrado.", i:2},
     {t:"Simplificamos la raíz usando denominador común.", i:3},
-    {t:"Raíz de x cuadrado menos y cuadrado sobre x. La expresamos con x abajo.", i:4},
+    {t:"Raíz de x cuadrado menos ye cuadrado sobre x. La expresamos con x abajo.", i:4},
     {t:"Calculamos v prima combinando los factores.", i:5},
     {t:"Aplicamos la fórmula del producto: u prima v más u v prima.", i:6},
-    {t:"La derivada respecto a x es arcoseno de y sobre x, menos y sobre raíz de x cuadrado menos y cuadrado.", i:7},
+    {t:"La derivada respecto a x es arcoseno de y sobre x, menos y sobre raíz de x cuadrado menos ye cuadrado.", i:7},
   ],
   nary28:[
     {t:"Respecto a y: x actúa como coeficiente constante afuera.", i:0},
     {t:"Derivamos arcoseno de y sobre x respecto a y. La derivada interna de y sobre x respecto a y es uno sobre x.", i:1},
     {t:"Simplificamos el denominador igual que antes.", i:2},
     {t:"Multiplicamos por x afuera. Los x se cancelan.", i:3},
-    {t:"La derivada respecto a y es x sobre raíz de x cuadrado menos y cuadrado.", i:4},
+    {t:"La derivada respecto a y es x sobre raíz de x cuadrado menos ye cuadrado.", i:4},
   ],
   29:[
-    {t:"El ejercicio de mayor complejidad: logaritmo natural de x más raíz de x cuadrado más y cuadrado.", i:-1},
+    {t:"El ejercicio de mayor complejidad: logaritmo natural de x más raíz de x cuadrado más ye cuadrado.", i:-1},
     {t:"Llamamos u al argumento del logaritmo: x más la raíz.", i:0},
     {t:"La derivada del logaritmo de u es uno sobre u, multiplicado por la derivada de u.", i:1},
-    {t:"La derivada de u respecto a x es uno, más la derivada de la raíz de x cuadrado más y cuadrado.", i:2},
+    {t:"La derivada de u respecto a x es uno, más la derivada de la raíz de x cuadrado más ye cuadrado.", i:2},
     {t:"La derivada de la raíz respecto a x: aplicamos la cadena, da x sobre la raíz.", i:3},
     {t:"La derivada de u queda como raíz más x, todo sobre la raíz. Con denominador común.", i:4},
     {t:"Multiplicamos uno sobre u por eso. El factor raíz más x aparece arriba y abajo. Se cancela.", i:5},
-    {t:"Resultado limpio: uno sobre raíz de x cuadrado más y cuadrado.", i:6},
+    {t:"Resultado limpio: uno sobre raíz de x cuadrado más ye cuadrado.", i:6},
   ],
   nary29:[
     {t:"Respecto a y: la derivada de u. La derivada de x es cero. La derivada de la raíz respecto a y es y sobre la raíz.", i:0},
@@ -1922,6 +1989,7 @@ function startVoice(){
   const ex = EX[curId];
   if(!ex) return;
   pickVoice();
+  ensureVoices(()=>{});
   narLines = buildNarration(ex);
   narIdx = 0;
   speaking = true;
@@ -1974,34 +2042,46 @@ function speakNext(){
     else st.textContent = idx===-2 ? 'Conclusión…' : 'Introducción…';
   }
 
-  /* Corrección fonética: la "y" sola se pronuncia "i" en TTS, forzamos "ye" */
+  /* ── Corrección fonética completa ── */
   function fixPhonetics(txt){
     return txt
-      .replace(/\bla y\b/g, 'la ye')
-      .replace(/\bla Y\b/g, 'la ye')
-      .replace(/\bde y\b/g, 'de ye')
-      .replace(/\ben y\b/g, 'en ye')
-      .replace(/\by es\b/g, 'ye es')
-      .replace(/\by en\b/g, 'ye en')
-      .replace(/\by el\b/g, 'ye el')
-      .replace(/\by la\b/g, 'ye la')
-      .replace(/\by al\b/g, 'ye al')
-      .replace(/\brespecto a y\b/gi, 'respecto a ye')
-      .replace(/\bde y\b/gi, 'de ye')
-      .replace(/\bde la y\b/gi, 'de la ye')
-      .replace(/\bla y es\b/gi, 'la ye es')
-      .replace(/\bla y\b/gi, 'la ye')
-      .replace(/\ba y\b/g, 'a ye')
-      .replace(/\ben y\b/g, 'en ye')
-      .replace(/\by\./g, 'ye.')
-      .replace(/\by,/g, 'ye,')
-      .replace(/\bUDI\b/g, 'údi');
+      /* UDI con acento en la U */
+      .replace(/\bUDI\b/g, 'údi')
+      /* "y" variable matemática → "ye" en todos los contextos */
+      .replace(/\brespecto a y\b/gi,  'respecto a ye')
+      .replace(/\bde la y\b/gi,       'de la ye')
+      .replace(/\bla y es\b/gi,       'la ye es')
+      .replace(/\bla y\b/gi,          'la ye')
+      .replace(/\bde y\b/gi,          'de ye')
+      .replace(/\ba y\b/g,            'a ye')
+      .replace(/\ben y\b/g,           'en ye')
+      .replace(/\by es\b/g,           'ye es')
+      .replace(/\by en\b/g,           'ye en')
+      .replace(/\by el\b/g,           'ye el')
+      .replace(/\by la\b/g,           'ye la')
+      .replace(/\by al\b/g,           'ye al')
+      .replace(/\by\./g,              'ye.')
+      .replace(/\by,/g,               'ye,')
+      /* Potencias de y: "y cuadrado", "y al cubo", etc. */
+      .replace(/\by\s+cuadrado\b/gi,  'ye cuadrado')
+      .replace(/\by\s+al\s+cubo\b/gi, 'ye al cubo')
+      .replace(/\by\s+al\b/gi,        'ye al')
+      .replace(/\by\s+a\s+la\b/gi,    'ye a la')
+      /* y² y³ escritos así en los guiones */
+      .replace(/y²/g,  'ye cuadrado')
+      .replace(/y³/g,  'ye al cubo')
+      .replace(/y⁴/g,  'ye a la cuarta')
+      /* Expresiones compuestas */
+      .replace(/\bx\s+ye\b/g,         'x ye')
+      .replace(/\bde\s+ye\b/g,        'de ye');
   }
+
+  const vp   = voiceParams();
   const utter = new SpeechSynthesisUtterance(fixPhonetics(line.t || ''));
-  utter.lang   = 'es-CO';
-  utter.rate   = 0.88;
-  utter.pitch  = 0.95;
-  utter.volume = 1;
+  utter.lang   = vp.lang;
+  utter.rate   = vp.rate;
+  utter.pitch  = vp.pitch;
+  utter.volume = vp.volume;
   if(selectedVoice) utter.voice = selectedVoice;
   utter.onstart = () => { startMouthAnim(); };
   utter.onend   = () => { stopMouthAnim(); narIdx++; setTimeout(speakNext, 420); };
@@ -2039,11 +2119,6 @@ function finishVoice(){
   document.querySelectorAll('.dev-line.narrating').forEach(e=>e.classList.remove('narrating'));
   document.querySelectorAll('.voice-dot').forEach(d=>d.classList.add('done-dot'));
 }
-
-if(speechSynthesis.onvoiceschanged !== undefined){
-  speechSynthesis.onvoiceschanged = pickVoice;
-}
-pickVoice();
 
 renderList();
 
