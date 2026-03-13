@@ -1,0 +1,2052 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Derivadas Parciales · UDI</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --blue:#1A6BAE;--dblue:#003A8F;--gold:#F5A800;--lgold:#FFF8E1;
+  --green:#1B6B2F;--lgreen:#EAF5EC;--dgreen:#0D4A1E;
+  --red:#B71C1C;--lred:#FFEBEE;
+  --purple:#5B21B6;--lpurple:#F5F3FF;
+  --orange:#C2500A;--lorange:#FFF3E0;
+  --gray0:#F7F8FA;--gray1:#EDEEF2;--gray2:#C8CAD4;
+  --gray3:#8E90A0;--gray4:#555770;--dark:#0F1120;--white:#FFF;
+  --lblue:#E8F1FB;--radius:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--gray0);color:var(--dark);min-height:100vh;display:flex;flex-direction:column}
+.app-header{background:var(--dblue);padding:0 2rem;display:flex;align-items:stretch;height:86px;gap:16px}
+.header-logo{display:flex;align-items:center;gap:10px;border-right:1px solid rgba(255,255,255,.15);padding-right:20px;margin-right:4px}
+.logo-mark{width:52px;height:52px;background:var(--gold);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:22px;color:var(--dblue);font-weight:700}
+.header-title{color:white;font-size:22px;font-weight:600;line-height:1.3}
+.header-title span{display:block;font-size:14px;font-weight:300;color:rgba(255,255,255,.6);margin-top:4px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.badge{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);font-size:14px;font-weight:500;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.18)}
+.author-badge{background:var(--gold);color:var(--dblue);font-size:15px;font-weight:700;padding:8px 20px;border-radius:24px;letter-spacing:.01em}
+.progress-bar{height:5px;background:var(--gray1)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width .4s ease}
+.app-body{display:grid;grid-template-columns:310px 1fr;min-height:calc(100vh - 91px)}
+.sidebar{background:var(--white);border-right:1px solid var(--gray1);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-top{padding:18px 14px 10px;border-bottom:1px solid var(--gray1)}
+.sidebar-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray3);margin-bottom:10px}
+.search-box{position:relative}
+.search-box::before{content:"⌕";position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--gray3);pointer-events:none}
+.search-box input{width:100%;background:var(--gray0);border:1px solid var(--gray1);border-radius:8px;padding:9px 12px 9px 34px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--dark);outline:none;transition:border .15s}
+.search-box input:focus{border-color:var(--blue)}
+.filter-pills{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-bottom:1px solid var(--gray1)}
+.pill{font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;border:1px solid var(--gray2);background:transparent;color:var(--gray4);cursor:pointer;transition:all .15s}
+.pill:hover{border-color:var(--blue);color:var(--blue)}
+.pill.active{background:var(--dblue);border-color:var(--dblue);color:white}
+.ex-list{overflow-y:auto;flex:1;padding:6px 8px}
+.ex-item{display:flex;align-items:center;gap:10px;padding:13px 10px;border-radius:8px;cursor:pointer;transition:background .12s;margin-bottom:2px;position:relative}
+.ex-item:hover{background:var(--gray0)}
+.ex-item.active{background:var(--lblue)}
+.ex-item.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;background:var(--blue);border-radius:0 3px 3px 0}
+.ex-num{width:34px;height:34px;flex-shrink:0;border-radius:8px;background:var(--gray1);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--gray4);transition:all .12s}
+.ex-item.active .ex-num{background:var(--blue);color:white}
+.ex-item.done .ex-num{background:var(--green);color:white}
+.ex-text{flex:1;min-width:0}
+.ex-name{font-size:15px;font-weight:500;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ex-tag{font-size:12px;color:var(--gray3);margin-top:3px}
+.ex-steps-count{font-size:12px;font-weight:600;color:var(--gray3);white-space:nowrap}
+.diff-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin-left:4px;white-space:nowrap}
+.diff-1{background:#EAF3DE;color:#3B6D11}
+.diff-2{background:#E8F1FB;color:#185FA5}
+.diff-3{background:#FFF8E1;color:#854F0B}
+.diff-4{background:#FFEBEE;color:#791F1F}
+.diff-5{background:#F5F3FF;color:#3C3489}
+.main{display:flex;flex-direction:column;overflow:hidden}
+.ex-top-bar{background:var(--white);border-bottom:1px solid var(--gray1);padding:22px 36px 18px}
+.ex-meta{display:flex;align-items:flex-start;gap:16px;margin-bottom:14px}
+.ex-num-big{width:58px;height:58px;background:var(--dblue);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-family:'DM Serif Display',serif;font-size:26px;flex-shrink:0}
+.ex-head-right{flex:1}
+.ex-head-label{font-size:12px;color:var(--gray3);font-weight:500;margin-bottom:6px}
+.ex-integral-big{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:var(--dblue);line-height:1.3;margin-bottom:8px}
+.ex-rule-badge{display:inline-flex;align-items:center;gap:6px;background:var(--lgold);border:1px solid #E6C000;border-radius:20px;padding:5px 14px;font-size:13px;font-weight:600;color:#7A5000}
+.teoria-box{background:var(--lblue);border:1px solid #B8D4F0;border-left:4px solid var(--blue);border-radius:0 8px 8px 0;padding:12px 18px;font-size:14px;color:var(--dblue);font-family:'IBM Plex Mono',monospace;line-height:1.6}
+.teoria-box b{font-weight:600;color:var(--dblue)}
+.voice-bar{background:var(--white);border-bottom:1px solid var(--gray1);padding:12px 28px;display:flex;align-items:center;gap:14px}
+.voice-btn{display:flex;align-items:center;gap:8px;background:var(--dblue);color:white;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .15s;white-space:nowrap}
+.voice-btn:hover{background:#002878}
+.voice-btn.active{background:#B71C1C}
+.voice-btn svg{width:18px;height:18px;flex-shrink:0}
+.voice-status{font-size:13px;color:var(--gray3);flex:1;font-style:italic}
+.voice-progress{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.voice-dot{width:8px;height:8px;border-radius:50%;background:var(--gray2);transition:background .3s}
+.voice-dot.active-dot{background:var(--gold)}
+.voice-dot.done-dot{background:var(--green)}
+.sol-scroll{flex:1;overflow-y:auto;padding:28px 36px}
+.cuaderno{background:var(--white);border:1px solid var(--gray1);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+.cuaderno-header{background:var(--gray0);border-bottom:1px solid var(--gray1);padding:10px 20px;display:flex;align-items:center;gap:10px}
+.cuaderno-icon{width:24px;height:24px;border-radius:6px;background:var(--dblue);display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;flex-shrink:0}
+.cuaderno-section-title{font-size:13px;font-weight:600;color:var(--gray4);letter-spacing:.03em}
+.cuaderno-body{padding:20px 24px}
+.dev-lines{display:flex;flex-direction:column;gap:0}
+.dev-line{display:flex;align-items:baseline;gap:0;border-bottom:1px dashed #E8E9F0;padding:10px 0}
+.dev-line:last-child{border-bottom:none}
+.line-annot{width:210px;flex-shrink:0;font-size:12px;color:var(--gray3);font-style:italic;padding-right:16px;line-height:1.4;padding-top:2px}
+.line-annot.result-annot{color:var(--green);font-style:normal;font-weight:600;font-size:13px}
+.line-formula{flex:1;font-family:'IBM Plex Mono',monospace;font-size:18px;color:var(--dark);line-height:1.6}
+.line-formula.highlight{color:var(--green);font-weight:600;font-size:21px}
+.why-box{margin:4px 0 8px 210px;background:var(--gray0);border-left:3px solid var(--gray2);border-radius:0 6px 6px 0;padding:8px 14px;font-size:13px;color:var(--gray4);line-height:1.5}
+.why-box.why-warn{background:var(--lred);border-left-color:var(--red);color:var(--red);font-weight:500}
+.why-box.why-tip{background:var(--lpurple);border-left-color:var(--purple);color:var(--purple)}
+.resultado-final{background:var(--lgreen);border:2px solid #A8D8A8;border-radius:var(--radius);padding:20px 28px;margin-bottom:20px}
+.resultado-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin-bottom:8px}
+.resultado-formula{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--dgreen);line-height:1.5}
+.resultado-check{font-size:12px;color:var(--green);margin-top:8px;font-style:italic}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.res-card{background:var(--lgreen);border:1.5px solid #A8D8A8;border-radius:var(--radius);padding:16px 20px}
+.res-card-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green);margin-bottom:6px}
+.res-card-formula{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--dgreen);line-height:1.4}
+.fade-in{opacity:0;transform:translateY(10px);transition:opacity .3s ease,transform .3s ease}
+.fade-in.show{opacity:1;transform:none}
+.main-footer{background:var(--white);border-top:1px solid var(--gray1);padding:14px 36px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:9px 20px;border-radius:8px;border:1px solid var(--gray2);background:transparent;color:var(--dark);cursor:pointer;transition:all .15s}
+.btn:hover{border-color:var(--blue);color:var(--blue);background:var(--lblue)}
+.btn.primary{background:var(--dblue);border-color:var(--dblue);color:white}
+.btn.primary:hover{background:#002878}
+.btn:disabled{opacity:.35;cursor:default}
+.btn:disabled:hover{border-color:var(--gray2);color:var(--dark);background:transparent}
+.counter{font-size:13px;color:var(--gray3);text-align:center}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--gray3);padding:40px}
+.empty-icon{width:72px;height:72px;background:var(--gray1);border-radius:18px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:32px;color:var(--gray3)}
+.empty-state h3{font-size:17px;font-weight:500;color:var(--gray4)}
+.empty-state p{font-size:14px;text-align:center;max-width:300px;line-height:1.5}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--gray2);border-radius:3px}
+sup{font-size:.65em;vertical-align:super;line-height:0}
+sub{font-size:.65em;vertical-align:sub;line-height:0}
+.vfrac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.1;font-size:.9em}
+.vfrac-n{border-bottom:1.8px solid currentColor;padding:0 4px 2px;text-align:center;min-width:12px}
+.vfrac-d{padding:2px 4px 0;text-align:center;min-width:12px}
+.no-results{padding:32px 16px;text-align:center;color:var(--gray3);font-size:14px}
+.avatar-panel{position:fixed;bottom:90px;right:28px;width:164px;background:var(--white);border:1px solid var(--gray1);border-radius:16px;box-shadow:0 8px 32px rgba(0,58,143,.18);padding:14px 12px 10px;text-align:center;z-index:100;display:none;flex-direction:column;align-items:center;gap:8px}
+.avatar-panel.show{display:flex}
+.avatar-face{width:80px;height:80px;border-radius:50%;border:3px solid var(--gold);flex-shrink:0;overflow:hidden}
+.avatar-name{font-size:12px;font-weight:700;color:var(--dblue);line-height:1.2}
+.avatar-subtitle{font-size:10px;color:var(--gray3)}
+.avatar-wave{display:flex;gap:3px;align-items:flex-end;height:20px}
+.avatar-wave span{width:3px;border-radius:2px;background:var(--blue);animation:none}
+.avatar-panel.speaking .avatar-wave span{animation:wavebar .7s ease-in-out infinite alternate}
+.avatar-wave span:nth-child(1){animation-delay:0s;height:6px}
+.avatar-wave span:nth-child(2){animation-delay:.12s;height:12px}
+.avatar-wave span:nth-child(3){animation-delay:.24s;height:18px}
+.avatar-wave span:nth-child(4){animation-delay:.12s;height:12px}
+.avatar-wave span:nth-child(5){animation-delay:0s;height:6px}
+@keyframes wavebar{to{height:18px;opacity:.5}}
+.dev-line.narrating{background:rgba(245,168,0,.13);border-radius:8px;margin:0 -8px;padding-left:8px;padding-right:8px;border-bottom:1px dashed #E8E9F0;transition:background .3s}
+.dev-line.narrating .line-annot{color:var(--dblue);font-weight:700;font-style:normal}
+.dev-line.narrating .line-formula{color:var(--dblue)}
+.dev-line.dev-note{background:var(--lpurple);border-radius:6px;margin:4px 0;padding:8px 14px;border-bottom:none}
+.dev-line.dev-note .note-text{font-size:13px;font-weight:600;color:var(--purple);font-family:'IBM Plex Mono',monospace;line-height:1.5}
+.dev-line.dev-note.narrating{background:rgba(245,168,0,.18)}
+@media(max-width:860px){.app-body{grid-template-columns:1fr}.sidebar{max-height:240px}.sol-scroll{padding:16px}.ex-top-bar{padding:16px}.voice-bar{padding:10px 16px}}
+
+/* ═══ RESPONSIVE MOBILE ════════════════════════════════════════════════════ */
+
+/* ── Tablet (≤900px) ── */
+@media(max-width:900px){
+  .app-header{padding:0 1rem;height:auto;min-height:64px;flex-wrap:wrap;gap:8px;padding-top:10px;padding-bottom:10px}
+  .header-logo{border-right:none;padding-right:0}
+  .logo-mark{width:40px;height:40px;font-size:18px;border-radius:9px}
+  .header-title{font-size:16px}
+  .header-title span{font-size:12px}
+  .header-right{width:100%;justify-content:space-between;padding-bottom:6px}
+  .author-badge{font-size:12px;padding:5px 12px}
+  .badge{font-size:12px;padding:4px 10px}
+  .app-body{grid-template-columns:1fr;min-height:auto}
+  .sidebar{max-height:220px;border-right:none;border-bottom:1px solid var(--gray1)}
+  .ex-top-bar{padding:14px 16px}
+  .ex-num-big{width:46px;height:46px;font-size:20px;border-radius:11px}
+  .ex-integral-big{font-size:20px}
+  .teoria-box{font-size:13px}
+  .voice-bar{padding:10px 16px;flex-wrap:wrap;gap:8px}
+  .voice-status{width:100%;order:3;font-size:12px}
+  .voice-progress{order:4;width:100%}
+  .sol-scroll{padding:16px}
+  .line-annot{width:150px;font-size:11px}
+  .line-formula{font-size:16px}
+  .why-box{margin-left:150px}
+  .main-footer{padding:12px 16px}
+  .avatar-panel{right:12px;bottom:70px;width:130px}
+}
+
+/* ── Móvil (≤600px) ── */
+@media(max-width:600px){
+  /* Header compacto */
+  .app-header{padding:10px 14px;gap:6px}
+  .logo-mark{width:36px;height:36px;font-size:16px;border-radius:8px;flex-shrink:0}
+  .header-title{font-size:14px;line-height:1.2}
+  .header-title span{font-size:11px;margin-top:2px}
+  .header-right{gap:6px}
+  .author-badge{font-size:11px;padding:4px 10px;border-radius:16px}
+  .badge{font-size:11px;padding:3px 8px}
+
+  /* Sidebar horizontal scroll */
+  .sidebar{max-height:none;height:auto}
+  .sidebar-top{padding:10px 12px 8px}
+  .sidebar-label{font-size:10px;margin-bottom:6px}
+  .filter-pills{padding:8px 12px;gap:4px}
+  .pill{font-size:11px;padding:3px 8px}
+  .ex-list{display:flex;flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:6px 8px;gap:6px;max-height:none;
+    scrollbar-width:thin;white-space:nowrap}
+  .ex-list::-webkit-scrollbar{height:3px}
+  .ex-item{flex-direction:column;align-items:center;min-width:64px;max-width:64px;padding:8px 6px;text-align:center;border-radius:10px}
+  .ex-item::before{top:4px;bottom:4px;left:auto;right:auto;top:auto;bottom:auto;width:0;height:0}
+  .ex-item.active{background:var(--lblue)}
+  .ex-num{width:36px;height:36px;font-size:13px;margin-bottom:4px}
+  .ex-text{min-width:0;width:100%}
+  .ex-name{font-size:10px;white-space:normal;overflow:hidden;text-overflow:ellipsis;max-height:2.8em;line-height:1.4}
+  .ex-tag{display:none}
+  .ex-steps-count{display:none}
+  .diff-badge{display:none}
+
+  /* Contenido principal */
+  .ex-top-bar{padding:12px 14px 10px}
+  .ex-meta{gap:10px;margin-bottom:10px}
+  .ex-num-big{width:40px;height:40px;font-size:18px;border-radius:10px;flex-shrink:0}
+  .ex-head-label{font-size:11px;margin-bottom:4px}
+  .ex-integral-big{font-size:16px;word-break:break-all;line-height:1.4}
+  .ex-rule-badge{font-size:11px;padding:4px 10px}
+  .teoria-box{font-size:12px;padding:10px 14px;word-break:break-word}
+
+  /* Barra de voz — stack vertical */
+  .voice-bar{flex-direction:column;align-items:stretch;padding:10px 14px;gap:8px}
+  .voice-btn{width:100%;justify-content:center;font-size:14px;padding:12px}
+  .voice-status{text-align:center;font-size:12px}
+  .voice-progress{justify-content:center}
+
+  /* Cuadernos — stack vertical en móvil */
+  .cuadernos-grid{grid-template-columns:1fr !important}
+
+  /* Filas de pasos — sin columna de anotación, todo apilado */
+  .dev-line{flex-direction:column;align-items:flex-start;gap:4px;padding:10px 0}
+  .line-annot{width:100%;font-size:11px;padding-right:0;padding-bottom:2px;border-bottom:none}
+  .line-annot.result-annot{font-size:12px}
+  .line-formula{font-size:15px;width:100%;word-break:break-all}
+  .line-formula.highlight{font-size:17px}
+  .why-box{margin-left:0;font-size:12px;padding:8px 12px}
+  .cuaderno-body{padding:14px}
+
+  /* Tarjetas de resultado */
+  .res-grid{grid-template-columns:1fr !important}
+  .res-card-formula{font-size:16px}
+
+  /* Footer navegación */
+  .main-footer{padding:10px 14px;gap:8px}
+  .btn{font-size:13px;padding:8px 14px}
+  .counter{font-size:12px}
+
+  /* Avatar más pequeño */
+  .avatar-panel{right:8px;bottom:60px;width:110px;padding:10px 8px 8px}
+  .avatar-face{width:60px;height:60px}
+  .avatar-name{font-size:10px}
+  .avatar-subtitle{font-size:9px}
+  .avatar-wave{height:14px}
+
+  /* Scroll suave en toda la app */
+  .sol-scroll{padding:12px 14px;-webkit-overflow-scrolling:touch}
+}
+
+/* ── Móvil muy pequeño (≤380px) ── */
+@media(max-width:380px){
+  .header-title{font-size:13px}
+  .author-badge{display:none}
+  .ex-integral-big{font-size:14px}
+  .line-formula{font-size:13px}
+  .line-formula.highlight{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-logo">
+    <div class="logo-mark">∂</div>
+    <div class="header-title">
+      UDI — Matemáticas III
+      <span>Derivadas Parciales de Primer Orden — Paso a Paso</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="badge" id="done-badge">0 / 30 vistos</span>
+    <span class="author-badge">Creado por: Edwin Yesidh Ríos Contreras</span>
+  </div>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+<div class="app-body">
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-label">30 Ejercicios — Dificultad progresiva</div>
+      <div class="search-box">
+        <input type="text" id="search" placeholder="Buscar ejercicio…" oninput="doFilter()">
+      </div>
+    </div>
+    <div class="filter-pills">
+      <button class="pill active" onclick="setCat('todos',this)">Todos</button>
+      <button class="pill" onclick="setCat('basica',this)">Básica</button>
+      <button class="pill" onclick="setCat('polinomio',this)">Polinomio</button>
+      <button class="pill" onclick="setCat('producto',this)">Producto</button>
+      <button class="pill" onclick="setCat('cadena',this)">Cadena</button>
+      <button class="pill" onclick="setCat('mixta',this)">Mixta</button>
+    </div>
+    <div class="ex-list" id="ex-list"></div>
+  </aside>
+
+  <main class="main" id="main">
+    <div style="flex:1;display:flex;flex-direction:column" id="content">
+      <div class="empty-state">
+        <div class="empty-icon">∂</div>
+        <h3>Selecciona un ejercicio</h3>
+        <p>Elige uno de la lista para ver el desarrollo completo, con derivadas parciales respecto a x y a y, paso a paso.</p>
+      </div>
+    </div>
+    <div class="main-footer" id="footer" style="display:none">
+      <button class="btn" id="btn-prev" onclick="nav(-1)">← Anterior</button>
+      <div class="counter" id="counter"></div>
+      <button class="btn primary" id="btn-next" onclick="nav(1)">Siguiente →</button>
+    </div>
+  </main>
+</div>
+
+<div class="avatar-panel" id="avatar-panel">
+  <div class="avatar-face">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="40" cy="40" r="40" fill="#003A8F"/>
+      <ellipse cx="40" cy="46" rx="22" ry="24" fill="#FDBCB4"/>
+      <path d="M18 36 Q18 14 40 14 Q62 14 62 36 Q58 26 40 24 Q22 24 18 36Z" fill="#1A1A1A"/>
+      <path d="M28 34 Q33 31 38 34" stroke="#1A1A1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M42 34 Q47 31 52 34" stroke="#1A1A1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="33" cy="38" rx="4" ry="4.5" fill="white"/>
+      <ellipse cx="47" cy="38" rx="4" ry="4.5" fill="white"/>
+      <circle cx="34" cy="39" r="2.5" fill="#1A1A1A"/>
+      <circle cx="48" cy="39" r="2.5" fill="#1A1A1A"/>
+      <circle cx="34.8" cy="38" r="1" fill="white"/>
+      <circle cx="48.8" cy="38" r="1" fill="white"/>
+      <ellipse cx="40" cy="46" rx="2.5" ry="1.5" fill="#E8967A"/>
+      <path id="avatar-mouth" d="M33 53 Q40 57 47 53" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="18" cy="46" rx="4" ry="5" fill="#FDBCB4"/>
+      <ellipse cx="62" cy="46" rx="4" ry="5" fill="#FDBCB4"/>
+      <rect x="28" y="68" width="24" height="12" rx="4" fill="#1A6BAE"/>
+      <path d="M34 68 L40 74 L46 68" fill="white" stroke="white" stroke-width="1"/>
+    </svg>
+  </div>
+  <div class="avatar-name">Prof. Edwin Ríos</div>
+  <div class="avatar-subtitle">UDI · Matemáticas III</div>
+  <div class="avatar-wave" id="avatar-wave">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   EJERCICIOS — 25 Derivadas Parciales de Primer Orden
+   Estructura: f(x,y) → ∂f/∂x  y  ∂f/∂y
+   Dificultad: 1=básica → 5=avanzada
+   Categorías: basica | polinomio | producto | cadena | mixta
+═══════════════════════════════════════════════════════ */
+const EX = [
+  {
+    id:0, cat:'basica', diff:1,
+    funcion:'f(x, y)  =  3x  +  5y',
+    rule:'Derivada de función lineal',
+    teoria:'Para funciones lineales, la derivada parcial respecto a x trata y como constante, y viceversa. ∂/∂x(ax) = a  ,  ∂/∂x(by) = 0',
+    desarrollo_x:[
+      {annot:'Función', eq:'f(x,y)  =  3x  +  5y'},
+      {annot:'Tratar y como constante', eq:'∂f/∂x  =  ∂/∂x(3x)  +  ∂/∂x(5y)', why:'5y es constante respecto a x. Su derivada es 0.'},
+      {annot:'Derivar término a término', eq:'=  3  +  0'},
+      {annot:'∴  ∂f/∂x', eq:'3', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Función', eq:'f(x,y)  =  3x  +  5y'},
+      {annot:'Tratar x como constante', eq:'∂f/∂y  =  ∂/∂y(3x)  +  ∂/∂y(5y)', why:'3x es constante respecto a y. Su derivada es 0.'},
+      {annot:'Derivar término a término', eq:'=  0  +  5'},
+      {annot:'∴  ∂f/∂y', eq:'5', result:true},
+    ],
+    res_x:'3', res_y:'5',
+    narx:[
+      {t:"¡Hola! Soy Edwin Ríos, tu profe de la UDI. Empecemos con el ejercicio más básico: una función lineal en x y en y.",i:-1},
+      {t:"Cuando derivamos respecto a x, tratamos la y como si fuera una constante. Es la regla fundamental de las derivadas parciales.",i:0},
+      {t:"Entonces derivamos tres x, que nos da tres. Y cinco y, que al ser constante, nos da cero.",i:1},
+      {t:"Resultado: la derivada parcial respecto a x es simplemente tres.",i:2},
+    ],
+    nary:[
+      {t:"Ahora derivamos respecto a y. Esta vez, x es la constante.",i:0},
+      {t:"Tres x da cero porque es constante. Y cinco y da cinco.",i:1},
+      {t:"La derivada parcial respecto a y es cinco. Fácil, ¿verdad?",i:2},
+    ],
+  },
+  {
+    id:1, cat:'basica', diff:1,
+    funcion:'f(x, y)  =  x²  +  y²',
+    rule:'Potencias simples en cada variable',
+    teoria:'∂/∂x(x²) = 2x  ,  ∂/∂x(y²) = 0  porque y² es constante respecto a x.',
+    desarrollo_x:[
+      {annot:'Función', eq:'f(x,y)  =  x²  +  y²'},
+      {annot:'Derivar x², y² es constante', eq:'∂f/∂x  =  2x  +  0', why:'y² no tiene x, entonces su derivada parcial respecto a x es cero.'},
+      {annot:'∴  ∂f/∂x', eq:'2x', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Función', eq:'f(x,y)  =  x²  +  y²'},
+      {annot:'Derivar y², x² es constante', eq:'∂f/∂y  =  0  +  2y', why:'Ahora x² es la constante.'},
+      {annot:'∴  ∂f/∂y', eq:'2y', result:true},
+    ],
+    res_x:'2x', res_y:'2y',
+    narx:[
+      {t:"Ahora tenemos x al cuadrado más y al cuadrado. Derivamos respecto a x.",i:-1},
+      {t:"La x al cuadrado se deriva normalmente y nos da dos x. Pero y al cuadrado es constante respecto a x, así que da cero.",i:0},
+      {t:"Resultado: dos x.",i:1},
+    ],
+    nary:[
+      {t:"Ahora respecto a y: x al cuadrado es constante, da cero. Y al cuadrado se deriva y da dos y.",i:0},
+      {t:"Resultado: dos y. Notan cómo el resultado es simétrico por la simetría de la función.",i:1},
+    ],
+  },
+  {
+    id:2, cat:'basica', diff:1,
+    funcion:'f(x, y)  =  4x³  −  2y²  +  7',
+    rule:'Polinomio simple — constante al final',
+    teoria:'Las constantes puras desaparecen al derivar. ∂/∂x(c) = 0 para cualquier constante c.',
+    desarrollo_x:[
+      {annot:'Función', eq:'f(x,y)  =  4x³  −  2y²  +  7'},
+      {annot:'Derivar respecto a x', eq:'∂f/∂x  =  12x²  −  0  +  0', why:'2y² es constante respecto a x → 0. El 7 también → 0.'},
+      {annot:'∴  ∂f/∂x', eq:'12x²', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Función', eq:'f(x,y)  =  4x³  −  2y²  +  7'},
+      {annot:'Derivar respecto a y', eq:'∂f/∂y  =  0  −  4y  +  0', why:'4x³ es constante respecto a y → 0.'},
+      {annot:'∴  ∂f/∂y', eq:'−4y', result:true},
+    ],
+    res_x:'12x²', res_y:'−4y',
+    narx:[
+      {t:"Tres términos: cuatro x al cubo, menos dos y cuadrado, más siete. Derivamos respecto a x.",i:-1},
+      {t:"Cuatro x al cubo nos da doce x al cuadrado. Los otros dos términos no tienen x, así que valen cero al derivar.",i:0},
+      {t:"Resultado respecto a x: doce x al cuadrado.",i:1},
+    ],
+    nary:[
+      {t:"Respecto a y: cuatro x al cubo es constante, cero. Menos dos y al cuadrado nos da menos cuatro y. Y el siete desaparece.",i:0},
+      {t:"Resultado respecto a y: menos cuatro y.",i:1},
+    ],
+  },
+  {
+    id:3, cat:'polinomio', diff:1,
+    funcion:'f(x, y)  =  x²y  +  xy²',
+    rule:'Términos con ambas variables',
+    teoria:'En x²y, cuando derivamos respecto a x, la y actúa como coeficiente constante. Cuando derivamos respecto a y, la x² actúa como coeficiente.',
+    desarrollo_x:[
+      {annot:'Función', eq:'f(x,y)  =  x²y  +  xy²'},
+      {annot:'∂/∂x de x²y', eq:'y · ∂/∂x(x²)  =  y · 2x  =  2xy', why:'y es constante, actúa como coeficiente del término x².'},
+      {annot:'∂/∂x de xy²', eq:'y² · ∂/∂x(x)  =  y² · 1  =  y²', why:'y² es constante, actúa como coeficiente de x.'},
+      {annot:'Sumar', eq:'∂f/∂x  =  2xy  +  y²'},
+      {annot:'∴  ∂f/∂x', eq:'2xy  +  y²', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Función', eq:'f(x,y)  =  x²y  +  xy²'},
+      {annot:'∂/∂y de x²y', eq:'x² · ∂/∂y(y)  =  x² · 1  =  x²', why:'x² es constante, actúa como coeficiente de y.'},
+      {annot:'∂/∂y de xy²', eq:'x · ∂/∂y(y²)  =  x · 2y  =  2xy', why:'x es constante, actúa como coeficiente de y².'},
+      {annot:'Sumar', eq:'∂f/∂y  =  x²  +  2xy'},
+      {annot:'∴  ∂f/∂y', eq:'x²  +  2xy', result:true},
+    ],
+    res_x:'2xy  +  y²', res_y:'x²  +  2xy',
+    narx:[
+      {t:"Aquí ya aparecen las dos variables juntas en un mismo término. Este es el corazón de las derivadas parciales.",i:-1},
+      {t:"En x cuadrado por y, la y actúa como un coeficiente fijo. Entonces derivamos solo la x cuadrado y nos da dos x y.",i:0},
+      {t:"En x por y cuadrado, la y cuadrado es el coeficiente. Derivamos la x, que nos da uno, y queda y cuadrado.",i:1},
+      {t:"Sumamos los dos resultados.",i:2},
+      {t:"Resultado respecto a x: dos xy más y cuadrado.",i:3},
+    ],
+    nary:[
+      {t:"Ahora respecto a y. En x cuadrado y, la x cuadrado es el coeficiente. Derivamos y, queda x cuadrado.",i:0},
+      {t:"En x por y cuadrado, x es el coeficiente. Derivamos y cuadrado, queda dos xy.",i:1},
+      {t:"Sumamos: x cuadrado más dos xy.",i:2},
+      {t:"Noten que ambos resultados tienen los mismos términos, solo ordenados diferente.",i:3},
+    ],
+  },
+  {
+    id:4, cat:'polinomio', diff:1,
+    funcion:'f(x, y)  =  3x²y³  −  5x  +  2y',
+    rule:'Polinomio mixto de dos variables',
+    teoria:'Cada término se deriva respecto a la variable de interés. Los términos que no contienen esa variable se eliminan.',
+    desarrollo_x:[
+      {annot:'Función', eq:'f(x,y)  =  3x²y³  −  5x  +  2y'},
+      {annot:'∂/∂x de 3x²y³', eq:'3y³ · 2x  =  6xy³', why:'y³ es constante respecto a x.'},
+      {annot:'∂/∂x de −5x', eq:'−5'},
+      {annot:'∂/∂x de 2y', eq:'0', why:'2y no tiene x → desaparece.'},
+      {annot:'∴  ∂f/∂x', eq:'6xy³  −  5', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Función', eq:'f(x,y)  =  3x²y³  −  5x  +  2y'},
+      {annot:'∂/∂y de 3x²y³', eq:'3x² · 3y²  =  9x²y²', why:'x² es constante respecto a y.'},
+      {annot:'∂/∂y de −5x', eq:'0', why:'−5x no tiene y → desaparece.'},
+      {annot:'∂/∂y de 2y', eq:'2'},
+      {annot:'∴  ∂f/∂y', eq:'9x²y²  +  2', result:true},
+    ],
+    res_x:'6xy³ − 5', res_y:'9x²y² + 2',
+    narx:[
+      {t:"Tres términos con mezcla de variables. Vamos término por término respecto a x.",i:-1},
+      {t:"Tres x cuadrado y cúbico: y cúbico es constante, derivamos x cuadrado y nos da seis x y cúbico.",i:0},
+      {t:"Menos cinco x: derivada directa, menos cinco.",i:1},
+      {t:"Dos y no tiene x, da cero.",i:2},
+      {t:"Resultado: seis x y cúbico menos cinco.",i:3},
+    ],
+    nary:[
+      {t:"Respecto a y. Tres x cuadrado y cúbico: x cuadrado es constante, derivamos y cúbico, da nueve x cuadrado y cuadrado.",i:0},
+      {t:"Menos cinco x no tiene y, da cero.",i:1},
+      {t:"Dos y da dos.",i:2},
+      {t:"Resultado: nueve x cuadrado y cuadrado más dos.",i:3},
+    ],
+  },
+  {
+    id:5, cat:'polinomio', diff:2,
+    funcion:'f(x, y)  =  x³  +  3x²y  −  y³  +  4',
+    rule:'Polinomio de grado 3 en dos variables',
+    teoria:'Se aplica la regla de la potencia término a término. El grado mixto 3x²y tiene dos derivadas diferentes.',
+    desarrollo_x:[
+      {annot:'Función', eq:'f(x,y)  =  x³  +  3x²y  −  y³  +  4'},
+      {annot:'∂/∂x de x³', eq:'3x²'},
+      {annot:'∂/∂x de 3x²y', eq:'3y · 2x  =  6xy', why:'y actúa como coeficiente de x².'},
+      {annot:'∂/∂x de −y³  y  4', eq:'0  +  0', why:'Ninguno contiene x.'},
+      {annot:'∴  ∂f/∂x', eq:'3x²  +  6xy', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Función', eq:'f(x,y)  =  x³  +  3x²y  −  y³  +  4'},
+      {annot:'∂/∂y de x³  y  4', eq:'0  +  0', why:'No contienen y.'},
+      {annot:'∂/∂y de 3x²y', eq:'3x² · 1  =  3x²', why:'x² actúa como coeficiente de y.'},
+      {annot:'∂/∂y de −y³', eq:'−3y²'},
+      {annot:'∴  ∂f/∂y', eq:'3x²  −  3y²', result:true},
+    ],
+    res_x:'3x² + 6xy', res_y:'3x² − 3y²',
+    narx:[
+      {t:"Polinomio de grado tres con términos mixtos. Vamos respecto a x.",i:-1},
+      {t:"X al cubo da tres x cuadrado.",i:0},
+      {t:"Tres x cuadrado y: y es constante, derivamos x cuadrado, nos da seis x y.",i:1},
+      {t:"Menos y cúbico y el cuatro no tienen x, dan cero.",i:2},
+      {t:"Resultado: tres x cuadrado más seis xy.",i:3},
+    ],
+    nary:[
+      {t:"Respecto a y. X cúbico y el cuatro no tienen y, dan cero.",i:0},
+      {t:"Tres x cuadrado y: x cuadrado es constante, queda tres x cuadrado.",i:1},
+      {t:"Menos y cúbico da menos tres y cuadrado.",i:2},
+      {t:"Resultado: tres x cuadrado menos tres y cuadrado.",i:3},
+    ],
+  },
+  {
+    id:6, cat:'polinomio', diff:2,
+    funcion:'f(x, y)  =  2x⁴  −  3x²y²  +  y⁴',
+    rule:'Polinomio simétrico de grado 4',
+    teoria:'El término 3x²y² tiene grado 2 en x y grado 2 en y. Al derivar, se aplica la regla de la potencia solo a la variable activa.',
+    desarrollo_x:[
+      {annot:'Función', eq:'f(x,y)  =  2x⁴  −  3x²y²  +  y⁴'},
+      {annot:'∂/∂x de 2x⁴', eq:'8x³'},
+      {annot:'∂/∂x de −3x²y²', eq:'−3y² · 2x  =  −6xy²', why:'y² es constante. Derivamos x².'},
+      {annot:'∂/∂x de y⁴', eq:'0', why:'y⁴ no depende de x.'},
+      {annot:'∴  ∂f/∂x', eq:'8x³  −  6xy²', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Función', eq:'f(x,y)  =  2x⁴  −  3x²y²  +  y⁴'},
+      {annot:'∂/∂y de 2x⁴', eq:'0'},
+      {annot:'∂/∂y de −3x²y²', eq:'−3x² · 2y  =  −6x²y', why:'x² es constante. Derivamos y².'},
+      {annot:'∂/∂y de y⁴', eq:'4y³'},
+      {annot:'∴  ∂f/∂y', eq:'−6x²y  +  4y³', result:true},
+    ],
+    res_x:'8x³ − 6xy²', res_y:'−6x²y + 4y³',
+    narx:[
+      {t:"Función simétrica de grado cuatro. Interesante porque tiene la misma estructura en x y en y.",i:-1},
+      {t:"Dos x a la cuarta da ocho x al cubo.",i:0},
+      {t:"Menos tres x cuadrado y cuadrado: y cuadrado es constante, derivamos x cuadrado, queda menos seis x y cuadrado.",i:1},
+      {t:"Y a la cuarta no tiene x, cero.",i:2},
+      {t:"Resultado respecto a x: ocho x al cubo menos seis x y cuadrado.",i:3},
+    ],
+    nary:[
+      {t:"Respecto a y: x a la cuarta da cero.",i:0},
+      {t:"Menos tres x cuadrado y cuadrado: x cuadrado es constante, derivamos y cuadrado, queda menos seis x cuadrado y.",i:1},
+      {t:"Y a la cuarta da cuatro y al cubo.",i:2},
+      {t:"Resultado: menos seis x cuadrado y más cuatro y al cubo.",i:3},
+    ],
+  },
+  {
+    id:7, cat:'producto', diff:2,
+    funcion:'f(x, y)  =  (x  +  y)(x  −  y)',
+    rule:'Regla del producto — expandir primero',
+    teoria:'Opción 1: Expandir el producto (x+y)(x−y) = x²−y² y luego derivar. Opción 2: Regla del producto. Aquí usamos expandir.',
+    desarrollo_x:[
+      {annot:'Expandir primero', eq:'(x+y)(x−y)  =  x²  −  y²', why:'Diferencia de cuadrados: (a+b)(a−b) = a²−b².'},
+      {annot:'∂/∂x de x²', eq:'2x'},
+      {annot:'∂/∂x de −y²', eq:'0'},
+      {annot:'∴  ∂f/∂x', eq:'2x', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Función expandida', eq:'f(x,y)  =  x²  −  y²'},
+      {annot:'∂/∂y de x²', eq:'0'},
+      {annot:'∂/∂y de −y²', eq:'−2y'},
+      {annot:'∴  ∂f/∂y', eq:'−2y', result:true},
+    ],
+    res_x:'2x', res_y:'−2y',
+    narx:[
+      {t:"Producto de dos binomios. El camino más rápido: expandir primero y luego derivar.",i:-1},
+      {t:"Usando diferencia de cuadrados: x más y por x menos y es x cuadrado menos y cuadrado.",i:0},
+      {t:"Ahora derivar es trivial. Respecto a x: dos x.",i:1},
+      {t:"Resultado: dos x. Mucho más rápido que usar la regla del producto directamente.",i:2},
+    ],
+    nary:[
+      {t:"Con la función expandida, respecto a y: x cuadrado da cero, menos y cuadrado da menos dos y.",i:0},
+      {t:"Resultado: menos dos y.",i:1},
+    ],
+  },
+  {
+    id:8, cat:'producto', diff:2,
+    funcion:'f(x, y)  =  x²  ·  y³',
+    rule:'Regla del producto — variables separadas',
+    teoria:'Cuando el producto tiene las variables separadas (solo x en un factor, solo y en otro), derivar es directo: la otra variable actúa como constante.',
+    desarrollo_x:[
+      {annot:'Función', eq:'f(x,y)  =  x²y³'},
+      {annot:'y³ es constante respecto a x', eq:'∂f/∂x  =  y³ · ∂/∂x(x²)  =  y³ · 2x'},
+      {annot:'∴  ∂f/∂x', eq:'2xy³', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Función', eq:'f(x,y)  =  x²y³'},
+      {annot:'x² es constante respecto a y', eq:'∂f/∂y  =  x² · ∂/∂y(y³)  =  x² · 3y²'},
+      {annot:'∴  ∂f/∂y', eq:'3x²y²', result:true},
+    ],
+    res_x:'2xy³', res_y:'3x²y²',
+    narx:[
+      {t:"Producto de dos potencias, cada una con su variable. Claro y directo.",i:-1},
+      {t:"Respecto a x: y cúbico actúa como constante. Derivamos x cuadrado y multiplicamos: dos x y cúbico.",i:0},
+      {t:"Resultado: dos x y cúbico.",i:1},
+    ],
+    nary:[
+      {t:"Respecto a y: x cuadrado actúa como constante. Derivamos y cúbico: tres y cuadrado. Resultado: tres x cuadrado y cuadrado.",i:0},
+    ],
+  },
+  {
+    id:9, cat:'producto', diff:3,
+    funcion:'f(x, y)  =  (2x  +  3y²)(x²  −  y)',
+    rule:'Regla del producto — ambos factores mixtos',
+    teoria:'Cuando ambos factores mezclan x y y, usamos la regla del producto: ∂/∂x[u·v] = u\'v + uv\'. Aquí se aplica en toda su forma.',
+    desarrollo_x:[
+      {annot:'Identificar u y v', eq:'u = 2x+3y²   ,   v = x²−y'},
+      {annot:'Derivar u respecto a x', eq:'u\'  =  ∂/∂x(2x+3y²)  =  2', why:'3y² no tiene x, da cero.'},
+      {annot:'Derivar v respecto a x', eq:'v\'  =  ∂/∂x(x²−y)  =  2x', why:'−y no tiene x, da cero.'},
+      {annot:'Aplicar u\'v + uv\'', eq:'2(x²−y)  +  (2x+3y²)(2x)'},
+      {annot:'Expandir', eq:'2x²−2y  +  4x²+6xy²'},
+      {annot:'∴  ∂f/∂x', eq:'6x²  +  6xy²  −  2y', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Identificar u y v', eq:'u = 2x+3y²   ,   v = x²−y'},
+      {annot:'Derivar u respecto a y', eq:'u\'  =  ∂/∂y(2x+3y²)  =  6y', why:'2x no tiene y, da cero.'},
+      {annot:'Derivar v respecto a y', eq:'v\'  =  ∂/∂y(x²−y)  =  −1'},
+      {annot:'Aplicar u\'v + uv\'', eq:'6y(x²−y)  +  (2x+3y²)(−1)'},
+      {annot:'Expandir', eq:'6x²y−6y²  −  2x−3y²'},
+      {annot:'∴  ∂f/∂y', eq:'6x²y  −  9y²  −  2x', result:true},
+    ],
+    res_x:'6x² + 6xy² − 2y', res_y:'6x²y − 9y² − 2x',
+    narx:[
+      {t:"Ahora los dos factores tienen mezcla de variables. Usamos la regla del producto completa.",i:-1},
+      {t:"Llamamos u al primer factor y v al segundo.",i:0},
+      {t:"Derivada de u respecto a x: dos x da dos, tres y cuadrado da cero. U prima es dos.",i:1},
+      {t:"Derivada de v respecto a x: x cuadrado da dos x, menos y da cero. V prima es dos x.",i:2},
+      {t:"Aplicamos la fórmula: u prima v más u v prima.",i:3},
+      {t:"Expandimos y agrupamos términos semejantes.",i:4},
+      {t:"Resultado: seis x cuadrado más seis x y cuadrado menos dos y.",i:5},
+    ],
+    nary:[
+      {t:"Respecto a y. U prima es seis y. V prima es menos uno.",i:0},
+      {t:"Aplicamos la fórmula y expandimos.",i:1},
+      {t:"Resultado: seis x cuadrado y menos nueve y cuadrado menos dos x.",i:4},
+    ],
+  },
+  {
+    id:10, cat:'cadena', diff:3,
+    funcion:'f(x, y)  =  (x  +  y)⁵',
+    rule:'Regla de la cadena — potencia de suma',
+    teoria:'∂/∂x[(u)^n] = n·u^(n−1) · ∂u/∂x. Aquí u = x+y. La derivada interna respecto a x es 1.',
+    desarrollo_x:[
+      {annot:'Identificar función compuesta', eq:'u  =  x + y  ,   f = u⁵'},
+      {annot:'Aplicar regla de la cadena', eq:'∂f/∂x  =  5u⁴ · ∂u/∂x'},
+      {annot:'Calcular ∂u/∂x', eq:'∂/∂x(x+y)  =  1', why:'La derivada de x es 1, la de y es 0.'},
+      {annot:'Sustituir', eq:'5(x+y)⁴ · 1'},
+      {annot:'∴  ∂f/∂x', eq:'5(x+y)⁴', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Función compuesta', eq:'u  =  x+y  ,   f = u⁵'},
+      {annot:'Aplicar regla de la cadena', eq:'∂f/∂y  =  5u⁴ · ∂u/∂y'},
+      {annot:'Calcular ∂u/∂y', eq:'∂/∂y(x+y)  =  1'},
+      {annot:'Sustituir', eq:'5(x+y)⁴ · 1'},
+      {annot:'∴  ∂f/∂y', eq:'5(x+y)⁴', result:true},
+    ],
+    res_x:'5(x+y)⁴', res_y:'5(x+y)⁴',
+    narx:[
+      {t:"Aquí empieza la regla de la cadena. La función x más y está elevada a la quinta. No podemos derivar directamente.",i:-1},
+      {t:"Identificamos la función interna u igual a x más y.",i:0},
+      {t:"La regla de la cadena dice: derivada de u a la quinta, es cinco u a la cuarta, multiplicado por la derivada de u.",i:1},
+      {t:"La derivada de x más y respecto a x es uno. La x da uno, la y da cero.",i:2},
+      {t:"Multiplicamos cinco por x más y a la cuarta por uno. El uno no cambia nada.",i:3},
+      {t:"Resultado: cinco por x más y a la cuarta.",i:4},
+    ],
+    nary:[
+      {t:"Respecto a y: exactamente el mismo proceso. La derivada de x más y respecto a y también es uno.",i:0},
+      {t:"Resultado: también cinco por x más y a la cuarta. Tiene sentido por la simetría.",i:3},
+    ],
+  },
+  {
+    id:11, cat:'cadena', diff:3,
+    funcion:'f(x, y)  =  (3x²  −  2y)⁴',
+    rule:'Regla de la cadena — argumento mixto',
+    teoria:'u = 3x²−2y. ∂u/∂x = 6x. ∂u/∂y = −2. La derivada exterior es 4u³.',
+    desarrollo_x:[
+      {annot:'Identificar u', eq:'u  =  3x²  −  2y'},
+      {annot:'Derivada exterior', eq:'∂f/∂x  =  4u³ · ∂u/∂x'},
+      {annot:'Calcular ∂u/∂x', eq:'∂/∂x(3x²−2y)  =  6x', why:'−2y es constante respecto a x.'},
+      {annot:'Sustituir', eq:'4(3x²−2y)³ · 6x'},
+      {annot:'∴  ∂f/∂x', eq:'24x(3x²−2y)³', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Identificar u', eq:'u  =  3x²  −  2y'},
+      {annot:'Derivada exterior', eq:'∂f/∂y  =  4u³ · ∂u/∂y'},
+      {annot:'Calcular ∂u/∂y', eq:'∂/∂y(3x²−2y)  =  −2', why:'3x² es constante respecto a y.'},
+      {annot:'Sustituir', eq:'4(3x²−2y)³ · (−2)'},
+      {annot:'∴  ∂f/∂y', eq:'−8(3x²−2y)³', result:true},
+    ],
+    res_x:'24x(3x²−2y)³', res_y:'−8(3x²−2y)³',
+    narx:[
+      {t:"Regla de la cadena con argumento mixto. El interior es tres x cuadrado menos dos y.",i:-1},
+      {t:"La derivada exterior: cuatro por el interior al cubo.",i:0},
+      {t:"La derivada interna respecto a x: tres x cuadrado da seis x, menos dos y da cero.",i:1},
+      {t:"Multiplicamos: cuatro por el interior al cubo por seis x.",i:2},
+      {t:"Resultado: veinticuatro x por tres x cuadrado menos dos y, todo al cubo.",i:3},
+    ],
+    nary:[
+      {t:"Respecto a y: derivada interna es menos dos. Tres x cuadrado da cero.",i:0},
+      {t:"Cuatro veces el interior al cubo por menos dos: resultado menos ocho por el interior al cubo.",i:2},
+    ],
+  },
+  {
+    id:12, cat:'cadena', diff:3,
+    funcion:'f(x, y)  =  √(x²  +  y²)',
+    rule:'Regla de la cadena — raíz cuadrada',
+    teoria:'√(u) = u^(1/2). Entonces ∂/∂x[√u] = (1/2)·u^(−1/2)·∂u/∂x = ∂u/∂x / (2√u).',
+    desarrollo_x:[
+      {annot:'Reescribir', eq:'f  =  (x²+y²)^(1/2)  ,   u = x²+y²'},
+      {annot:'Derivada exterior', eq:'∂f/∂x  =  (1/2)(x²+y²)^(−1/2) · ∂u/∂x'},
+      {annot:'Calcular ∂u/∂x', eq:'∂/∂x(x²+y²)  =  2x'},
+      {annot:'Sustituir', eq:'(1/2) · (1/√(x²+y²)) · 2x'},
+      {annot:'Simplificar', eq:'x / √(x²+y²)'},
+      {annot:'∴  ∂f/∂x', eq:'x / √(x²+y²)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Reescribir', eq:'f  =  (x²+y²)^(1/2)  ,   u = x²+y²'},
+      {annot:'Derivada exterior', eq:'∂f/∂y  =  (1/2)(x²+y²)^(−1/2) · ∂u/∂y'},
+      {annot:'Calcular ∂u/∂y', eq:'∂/∂y(x²+y²)  =  2y'},
+      {annot:'Sustituir', eq:'(1/2) · (1/√(x²+y²)) · 2y'},
+      {annot:'Simplificar', eq:'y / √(x²+y²)'},
+      {annot:'∴  ∂f/∂y', eq:'y / √(x²+y²)', result:true},
+    ],
+    res_x:'x / √(x²+y²)', res_y:'y / √(x²+y²)',
+    narx:[
+      {t:"La raíz cuadrada de x cuadrado más y cuadrado. Clásica en geometría, es la distancia al origen.",i:-1},
+      {t:"Reescribimos la raíz como la suma elevada a la un medio.",i:0},
+      {t:"La derivada exterior es un medio por la suma a la menos un medio.",i:1},
+      {t:"La derivada interna respecto a x es dos x.",i:2},
+      {t:"El dos del numerador y el dos del denominador se cancelan. Queda x sobre la raíz.",i:3},
+      {t:"Resultado: x sobre raíz de x cuadrado más y cuadrado.",i:4},
+    ],
+    nary:[
+      {t:"Respecto a y: todo igual pero la derivada interna es dos y.",i:0},
+      {t:"Resultado: y sobre raíz de x cuadrado más y cuadrado. Simétrico, como se esperaba.",i:4},
+    ],
+  },
+  {
+    id:13, cat:'mixta', diff:3,
+    funcion:'f(x, y)  =  x²  ·  eˣʸ',
+    rule:'Producto + regla de la cadena (función exponencial)',
+    teoria:'∂/∂x[e^(xy)] = e^(xy) · y  (regla cadena, derivada interna de xy respecto a x es y). Para el producto x²·e^(xy) usamos regla del producto.',
+    desarrollo_x:[
+      {annot:'u = x² , v = e^(xy)', eq:'Regla del producto: u\'v + uv\''},
+      {annot:'u\' = ∂/∂x(x²)', eq:'u\'  =  2x'},
+      {annot:'v\' = ∂/∂x(e^(xy))', eq:'v\'  =  e^(xy) · y', why:'Regla cadena: derivada interna de xy respecto a x es y.'},
+      {annot:'Aplicar u\'v + uv\'', eq:'2x·e^(xy)  +  x²·e^(xy)·y'},
+      {annot:'Factorizar e^(xy)', eq:'e^(xy)(2x  +  x²y)'},
+      {annot:'∴  ∂f/∂x', eq:'x·e^(xy)(2  +  xy)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'u = x² , v = e^(xy)', eq:'x² es constante respecto a y'},
+      {annot:'∂f/∂y = x² · ∂/∂y(e^(xy))', eq:'∂/∂y(e^(xy))  =  e^(xy) · x', why:'Derivada interna de xy respecto a y es x.'},
+      {annot:'∴  ∂f/∂y', eq:'x³·e^(xy)', result:true},
+    ],
+    res_x:'x·e^(xy)(2+xy)', res_y:'x³·e^(xy)',
+    narx:[
+      {t:"Aquí combinamos producto y cadena. El término e a la xy es una exponencial compuesta.",i:-1},
+      {t:"Aplicamos regla del producto: u igual x cuadrado, v igual e a la xy.",i:0},
+      {t:"U prima respecto a x es dos x.",i:1},
+      {t:"V prima: la derivada de e a la xy respecto a x usa la regla de la cadena. La derivada del exponente xy respecto a x es y. Entonces v prima es e a la xy por y.",i:2},
+      {t:"Aplicamos la fórmula y factorizamos.",i:3},
+      {t:"Resultado: x por e a la xy por la cantidad dos más xy.",i:4},
+    ],
+    nary:[
+      {t:"Respecto a y: x cuadrado es constante. Solo derivamos e a la xy.",i:0},
+      {t:"La derivada de e a la xy respecto a y: la derivada del exponente xy respecto a y es x.",i:1},
+      {t:"Resultado: x cuadrado por e a la xy por x, que es x cúbico por e a la xy.",i:2},
+    ],
+  },
+  {
+    id:14, cat:'mixta', diff:3,
+    funcion:'f(x, y)  =  ln(x²y)',
+    rule:'Logaritmo natural — regla de la cadena',
+    teoria:'∂/∂x[ln(u)] = (1/u)·∂u/∂x. Para simplificar, ln(x²y) = 2ln(x) + ln(y) con propiedades de logaritmos.',
+    desarrollo_x:[
+      {annot:'Usar propiedad de logaritmos', eq:'ln(x²y)  =  2ln(x)  +  ln(y)', why:'ln(a·b) = ln(a)+ln(b) y ln(x²) = 2ln(x).'},
+      {annot:'∂/∂x de 2ln(x)', eq:'2 · (1/x)  =  2/x'},
+      {annot:'∂/∂x de ln(y)', eq:'0', why:'ln(y) no depende de x.'},
+      {annot:'∴  ∂f/∂x', eq:'2/x', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Función expandida', eq:'ln(x²y)  =  2ln(x)  +  ln(y)'},
+      {annot:'∂/∂y de 2ln(x)', eq:'0'},
+      {annot:'∂/∂y de ln(y)', eq:'1/y'},
+      {annot:'∴  ∂f/∂y', eq:'1/y', result:true},
+    ],
+    res_x:'2/x', res_y:'1/y',
+    narx:[
+      {t:"Logaritmo de x cuadrado por y. El truco es usar propiedades de logaritmos antes de derivar.",i:-1},
+      {t:"Separamos: logaritmo de x cuadrado y, es dos logaritmo de x más logaritmo de y.",i:0},
+      {t:"Ahora es mucho más fácil. La derivada de dos logaritmo de x respecto a x es dos sobre x.",i:1},
+      {t:"Logaritmo de y no tiene x, da cero.",i:2},
+      {t:"Resultado: dos sobre x. Mucho más limpio que usar la cadena directamente.",i:3},
+    ],
+    nary:[
+      {t:"Respecto a y con la función expandida: dos logaritmo de x da cero. Logaritmo de y da uno sobre y.",i:0},
+      {t:"Resultado: uno sobre y.",i:2},
+    ],
+  },
+  {
+    id:15, cat:'mixta', diff:4,
+    funcion:'f(x, y)  =  sen(x²y)',
+    rule:'Función trigonométrica — regla de la cadena',
+    teoria:'∂/∂x[sen(u)] = cos(u)·∂u/∂x. Con u = x²y, ∂u/∂x = 2xy y ∂u/∂y = x².',
+    desarrollo_x:[
+      {annot:'Identificar', eq:'u = x²y   →   f = u   →   sen(u)'},
+      {annot:'Derivada exterior', eq:'∂f/∂x  =  cos(x²y) · ∂u/∂x'},
+      {annot:'Calcular ∂u/∂x', eq:'∂/∂x(x²y)  =  2xy', why:'y actúa como constante.'},
+      {annot:'Sustituir', eq:'cos(x²y) · 2xy'},
+      {annot:'∴  ∂f/∂x', eq:'2xy·cos(x²y)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Identificar', eq:'u = x²y   →   f = u   →   sen(u)'},
+      {annot:'Derivada exterior', eq:'∂f/∂y  =  cos(x²y) · ∂u/∂y'},
+      {annot:'Calcular ∂u/∂y', eq:'∂/∂y(x²y)  =  x²', why:'x² actúa como constante.'},
+      {annot:'Sustituir', eq:'cos(x²y) · x²'},
+      {annot:'∴  ∂f/∂y', eq:'x²·cos(x²y)', result:true},
+    ],
+    res_x:'2xy·cos(x²y)', res_y:'x²·cos(x²y)',
+    narx:[
+      {t:"Función trigonométrica compuesta. El seno de x cuadrado y.",i:-1},
+      {t:"La regla de la cadena dice: derivada del seno es el coseno del mismo argumento, multiplicado por la derivada interna.",i:1},
+      {t:"La derivada interna de x cuadrado y respecto a x: y es constante, derivamos x cuadrado, da dos x y.",i:2},
+      {t:"Resultado: dos xy por coseno de x cuadrado y.",i:3},
+    ],
+    nary:[
+      {t:"Respecto a y: coseno del mismo argumento, multiplicado por la derivada interna de x cuadrado y respecto a y.",i:1},
+      {t:"La derivada interna respecto a y: x cuadrado es constante, derivamos y, da x cuadrado.",i:2},
+      {t:"Resultado: x cuadrado por coseno de x cuadrado y.",i:3},
+    ],
+  },
+  {
+    id:16, cat:'mixta', diff:4,
+    funcion:'f(x, y)  =  cos(3x  −  2y)',
+    rule:'Coseno con argumento lineal mixto',
+    teoria:'∂/∂x[cos(u)] = −sen(u)·∂u/∂x. Con u = 3x−2y, ∂u/∂x = 3 y ∂u/∂y = −2.',
+    desarrollo_x:[
+      {annot:'Identificar', eq:'u = 3x−2y   →   f = cos(u)'},
+      {annot:'Derivada exterior', eq:'∂f/∂x  =  −sen(3x−2y) · ∂u/∂x'},
+      {annot:'∂u/∂x = 3', eq:'−sen(3x−2y) · 3'},
+      {annot:'∴  ∂f/∂x', eq:'−3·sen(3x−2y)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Identificar', eq:'u = 3x−2y   →   f = cos(u)'},
+      {annot:'Derivada exterior', eq:'∂f/∂y  =  −sen(3x−2y) · ∂u/∂y'},
+      {annot:'∂u/∂y = −2', eq:'−sen(3x−2y) · (−2)'},
+      {annot:'∴  ∂f/∂y', eq:'2·sen(3x−2y)', result:true},
+    ],
+    res_x:'−3·sen(3x−2y)', res_y:'2·sen(3x−2y)',
+    narx:[
+      {t:"Coseno de tres x menos dos y. Cadena directa.",i:-1},
+      {t:"La derivada del coseno es menos seno del mismo argumento.",i:1},
+      {t:"La derivada interna tres x menos dos y respecto a x es tres.",i:2},
+      {t:"Resultado: menos tres seno de tres x menos dos y.",i:3},
+    ],
+    nary:[
+      {t:"Respecto a y: menos seno del argumento. Derivada interna respecto a y es menos dos.",i:1},
+      {t:"Menos seno por menos dos da más dos. Resultado: dos seno de tres x menos dos y.",i:2},
+    ],
+  },
+  {
+    id:17, cat:'mixta', diff:4,
+    funcion:'f(x, y)  =  x·sen(y)  +  y·cos(x)',
+    rule:'Suma de productos con trigonometría',
+    teoria:'Aplicar regla del producto en cada término. Derivadas estándar: d/dx[sen(y)]=0, d/dx[cos(x)]=−sen(x).',
+    desarrollo_x:[
+      {annot:'Separar por linealidad', eq:'∂f/∂x  =  ∂/∂x[x·sen(y)]  +  ∂/∂x[y·cos(x)]'},
+      {annot:'∂/∂x de x·sen(y)', eq:'sen(y) · 1  =  sen(y)', why:'sen(y) es constante respecto a x.'},
+      {annot:'∂/∂x de y·cos(x)', eq:'y · (−sen(x))  =  −y·sen(x)', why:'y es constante. Derivada de cos(x) es −sen(x).'},
+      {annot:'∴  ∂f/∂x', eq:'sen(y)  −  y·sen(x)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Separar por linealidad', eq:'∂f/∂y  =  ∂/∂y[x·sen(y)]  +  ∂/∂y[y·cos(x)]'},
+      {annot:'∂/∂y de x·sen(y)', eq:'x · cos(y)', why:'x es constante. Derivada de sen(y) es cos(y).'},
+      {annot:'∂/∂y de y·cos(x)', eq:'cos(x) · 1  =  cos(x)', why:'cos(x) es constante respecto a y.'},
+      {annot:'∴  ∂f/∂y', eq:'x·cos(y)  +  cos(x)', result:true},
+    ],
+    res_x:'sen(y) − y·sen(x)', res_y:'x·cos(y) + cos(x)',
+    narx:[
+      {t:"Suma de dos productos con funciones trigonométricas. Separamos y aplicamos por partes.",i:-1},
+      {t:"Primer término: x por seno y. El seno de y es constante respecto a x, queda seno de y.",i:0},
+      {t:"Segundo término: y por coseno de x. Y es constante. La derivada de coseno es menos seno. Queda menos y seno de x.",i:1},
+      {t:"Resultado: seno de y menos y seno de x.",i:2},
+    ],
+    nary:[
+      {t:"Respecto a y. Primer término: x por seno y. X es constante. La derivada de seno es coseno. Queda x coseno de y.",i:0},
+      {t:"Segundo término: y por coseno x. Coseno de x es constante. Derivamos y, da uno. Queda coseno de x.",i:1},
+      {t:"Resultado: x coseno de y más coseno de x.",i:2},
+    ],
+  },
+  {
+    id:18, cat:'cadena', diff:4,
+    funcion:'f(x, y)  =  e^(x²  +  y²)',
+    rule:'Exponencial con argumento cuadrático',
+    teoria:'∂/∂x[e^u] = e^u · ∂u/∂x. Con u = x²+y², ∂u/∂x = 2x y ∂u/∂y = 2y.',
+    desarrollo_x:[
+      {annot:'Identificar', eq:'u = x²+y²  ,  f = e^u'},
+      {annot:'Regla cadena respecto a x', eq:'∂f/∂x  =  e^(x²+y²) · ∂u/∂x'},
+      {annot:'∂u/∂x = 2x', eq:'e^(x²+y²) · 2x'},
+      {annot:'∴  ∂f/∂x', eq:'2x·e^(x²+y²)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Identificar', eq:'u = x²+y²  ,  f = e^u'},
+      {annot:'Regla cadena respecto a y', eq:'∂f/∂y  =  e^(x²+y²) · ∂u/∂y'},
+      {annot:'∂u/∂y = 2y', eq:'e^(x²+y²) · 2y'},
+      {annot:'∴  ∂f/∂y', eq:'2y·e^(x²+y²)', result:true},
+    ],
+    res_x:'2x·e^(x²+y²)', res_y:'2y·e^(x²+y²)',
+    narx:[
+      {t:"Exponencial de x cuadrado más y cuadrado. El mismo argumento que la distancia al origen.",i:-1},
+      {t:"La derivada de e a la u es e a la u multiplicado por la derivada de u.",i:1},
+      {t:"La derivada de x cuadrado más y cuadrado respecto a x es dos x.",i:2},
+      {t:"Resultado: dos x por e a la suma de cuadrados.",i:3},
+    ],
+    nary:[
+      {t:"Respecto a y: mismo proceso. La derivada interna respecto a y es dos y.",i:1},
+      {t:"Resultado: dos y por e a la suma de cuadrados.",i:3},
+    ],
+  },
+  {
+    id:19, cat:'mixta', diff:4,
+    funcion:'f(x, y)  =  (x/y)  +  (y/x)',
+    rule:'Cociente de variables — derivada de fracción',
+    teoria:'∂/∂x(x/y) = 1/y (y constante). ∂/∂x(y/x) = y·∂/∂x(x^(−1)) = −y/x². Aplicar en cada término.',
+    desarrollo_x:[
+      {annot:'Reescribir', eq:'f  =  x·y^(−1)  +  y·x^(−1)'},
+      {annot:'∂/∂x de x·y^(−1)', eq:'y^(−1) · 1  =  1/y', why:'y^(−1) es constante respecto a x.'},
+      {annot:'∂/∂x de y·x^(−1)', eq:'y · (−x^(−2))  =  −y/x²', why:'y constante. Derivada de x^(−1) es −x^(−2).'},
+      {annot:'∴  ∂f/∂x', eq:'1/y  −  y/x²', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Reescribir', eq:'f  =  x·y^(−1)  +  y·x^(−1)'},
+      {annot:'∂/∂y de x·y^(−1)', eq:'x · (−y^(−2))  =  −x/y²'},
+      {annot:'∂/∂y de y·x^(−1)', eq:'x^(−1) · 1  =  1/x', why:'x^(−1) es constante respecto a y.'},
+      {annot:'∴  ∂f/∂y', eq:'−x/y²  +  1/x', result:true},
+    ],
+    res_x:'1/y − y/x²', res_y:'1/x − x/y²',
+    narx:[
+      {t:"Suma de dos cocientes, cada uno con las variables cruzadas. Ojo con el manejo de las fracciones.",i:-1},
+      {t:"Reescribimos x sobre y como x por y a la menos uno, y y sobre x como y por x a la menos uno.",i:0},
+      {t:"Derivada de x por y a la menos uno respecto a x: y a la menos uno es constante, derivamos x, da uno sobre y.",i:1},
+      {t:"Derivada de y por x a la menos uno respecto a x: y es constante, derivamos x a la menos uno, da menos x a la menos dos. Queda menos y sobre x cuadrado.",i:2},
+      {t:"Resultado: uno sobre y menos y sobre x cuadrado.",i:3},
+    ],
+    nary:[
+      {t:"Respecto a y. Primer término: x por y a la menos uno. X constante, derivamos y a la menos uno, da menos x sobre y cuadrado.",i:0},
+      {t:"Segundo término: y por x a la menos uno. X a la menos uno es constante. Derivamos y, da uno sobre x.",i:1},
+      {t:"Resultado: uno sobre x menos x sobre y cuadrado.",i:2},
+    ],
+  },
+  {
+    id:20, cat:'mixta', diff:4,
+    funcion:'f(x, y)  =  arctan(y/x)',
+    rule:'Función inversa — regla de la cadena',
+    teoria:'∂/∂u[arctan(u)] = 1/(1+u²). Con u = y/x, ∂u/∂x = −y/x² y ∂u/∂y = 1/x.',
+    desarrollo_x:[
+      {annot:'u = y/x', eq:'∂f/∂x  =  (1/(1+u²)) · ∂u/∂x'},
+      {annot:'1 + u²', eq:'1 + (y/x)²  =  (x²+y²)/x²'},
+      {annot:'Calcular ∂u/∂x', eq:'∂u/∂x  =  −y/x²'},
+      {annot:'Sustituir', eq:'(x²/(x²+y²)) · (−y/x²)'},
+      {annot:'Simplificar', eq:'−y / (x²+y²)'},
+      {annot:'∴  ∂f/∂x', eq:'−y / (x²+y²)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'u = y/x', eq:'∂/∂y[arctan(u)] = 1/(1+u²) · ∂u/∂y'},
+      {annot:'1 + u²', eq:'1 + (y/x)²  =  (x²+y²)/x²'},
+      {annot:'Calcular ∂u/∂y', eq:'∂u/∂y  =  1/x'},
+      {annot:'Sustituir', eq:'(x²/(x²+y²)) · (1/x)'},
+      {annot:'Simplificar', eq:'x / (x²+y²)'},
+      {annot:'∴  ∂f/∂y', eq:'x / (x²+y²)', result:true},
+    ],
+    res_x:'−y/(x²+y²)', res_y:'x/(x²+y²)',
+    narx:[
+      {t:"Arcotangente de y sobre x. Esta función aparece mucho en coordenadas polares. Requiere un poco más de cuidado.",i:-1},
+      {t:"La derivada de arcotangente de u es uno sobre uno más u cuadrado, multiplicado por la derivada de u.",i:0},
+      {t:"Calculamos uno más u cuadrado, donde u es y sobre x. El resultado es x cuadrado más y cuadrado sobre x cuadrado.",i:1},
+      {t:"La derivada de y sobre x respecto a x: usando cociente o potencia negativa, da menos y sobre x cuadrado.",i:2},
+      {t:"Multiplicamos: x cuadrado sobre la suma de cuadrados, por menos y sobre x cuadrado. Los x cuadrado se cancelan.",i:3},
+      {t:"Resultado: menos y sobre x cuadrado más y cuadrado.",i:4},
+    ],
+    nary:[
+      {t:"Respecto a y: todo igual pero la derivada de y sobre x respecto a y es uno sobre x.",i:2},
+      {t:"Resultado: x sobre x cuadrado más y cuadrado.",i:4},
+    ],
+  },
+  {
+    id:21, cat:'mixta', diff:5,
+    funcion:'f(x, y)  =  x²·ln(xy)',
+    rule:'Producto con logaritmo compuesto',
+    teoria:'Regla del producto: u=x², v=ln(xy). Expandir: ln(xy)=ln(x)+ln(y) simplifica la derivada de v.',
+    desarrollo_x:[
+      {annot:'Expandir ln(xy)', eq:'ln(xy)  =  ln(x)  +  ln(y)'},
+      {annot:'f = x²ln(x) + x²ln(y)', eq:'Separar en dos términos'},
+      {annot:'∂/∂x de x²ln(x)', eq:'2x·ln(x)  +  x²·(1/x)  =  2x·ln(x)  +  x', why:'Regla del producto en x²·ln(x).'},
+      {annot:'∂/∂x de x²ln(y)', eq:'2x·ln(y)', why:'ln(y) es constante respecto a x.'},
+      {annot:'Sumar y simplificar', eq:'2x·ln(x) + x + 2x·ln(y)'},
+      {annot:'∴  ∂f/∂x', eq:'x(2ln(xy)  +  1)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'f = x²ln(x) + x²ln(y)', eq:'(ya expandida)'},
+      {annot:'∂/∂y de x²ln(x)', eq:'0', why:'No depende de y.'},
+      {annot:'∂/∂y de x²ln(y)', eq:'x² · (1/y)  =  x²/y'},
+      {annot:'∴  ∂f/∂y', eq:'x²/y', result:true},
+    ],
+    res_x:'x(2ln(xy)+1)', res_y:'x²/y',
+    narx:[
+      {t:"Producto de x cuadrado por logaritmo de xy. Nivel avanzado, pero con la estrategia correcta se resuelve bien.",i:-1},
+      {t:"Primero expandimos el logaritmo: logaritmo de xy es logaritmo de x más logaritmo de y.",i:0},
+      {t:"Separamos en dos términos: x cuadrado logaritmo de x, más x cuadrado logaritmo de y.",i:1},
+      {t:"Para el primer término usamos la regla del producto: dos x logaritmo de x, más x cuadrado sobre x, que simplifica a x.",i:2},
+      {t:"El segundo término: logaritmo de y es constante, derivamos x cuadrado, da dos x logaritmo de y.",i:3},
+      {t:"Sumamos y factorizamos: x por dos logaritmo de xy más uno.",i:4},
+    ],
+    nary:[
+      {t:"Respecto a y con la función expandida: x cuadrado logaritmo de x no tiene y, da cero.",i:1},
+      {t:"x cuadrado logaritmo de y: x cuadrado es constante, derivamos logaritmo de y, da uno sobre y. Resultado: x cuadrado sobre y.",i:2},
+    ],
+  },
+  {
+    id:22, cat:'mixta', diff:5,
+    funcion:'f(x, y)  =  e^x · sen(y)  +  x²·cos(y)',
+    rule:'Suma de productos con exponencial y trigonometría',
+    teoria:'Aplicar linealidad y regla del producto en cada término. Combina derivadas de e^x, sen(y), x² y cos(y).',
+    desarrollo_x:[
+      {annot:'Separar por linealidad', eq:'∂f/∂x  =  ∂/∂x[e^x·sen(y)] + ∂/∂x[x²·cos(y)]'},
+      {annot:'∂/∂x de e^x·sen(y)', eq:'e^x·sen(y)', why:'sen(y) es constante. Derivada de e^x es e^x.'},
+      {annot:'∂/∂x de x²·cos(y)', eq:'2x·cos(y)', why:'cos(y) es constante respecto a x.'},
+      {annot:'∴  ∂f/∂x', eq:'e^x·sen(y)  +  2x·cos(y)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Separar por linealidad', eq:'∂f/∂y  =  ∂/∂y[e^x·sen(y)] + ∂/∂y[x²·cos(y)]'},
+      {annot:'∂/∂y de e^x·sen(y)', eq:'e^x·cos(y)', why:'e^x es constante. Derivada de sen(y) es cos(y).'},
+      {annot:'∂/∂y de x²·cos(y)', eq:'x²·(−sen(y))  =  −x²·sen(y)', why:'x² es constante. Derivada de cos(y) es −sen(y).'},
+      {annot:'∴  ∂f/∂y', eq:'e^x·cos(y)  −  x²·sen(y)', result:true},
+    ],
+    res_x:'e^x·sen(y) + 2x·cos(y)', res_y:'e^x·cos(y) − x²·sen(y)',
+    narx:[
+      {t:"Combinación de exponencial y trigonometría. Dos términos que se manejan por separado.",i:-1},
+      {t:"Primer término: e a la x por seno de y. El seno de y es constante respecto a x. Derivamos e a la x, queda e a la x. Resultado del término: e a la x seno de y.",i:0},
+      {t:"Segundo término: x cuadrado coseno de y. Coseno de y es constante. Derivamos x cuadrado, da dos x coseno de y.",i:1},
+      {t:"Resultado total: e a la x seno de y más dos x coseno de y.",i:2},
+    ],
+    nary:[
+      {t:"Respecto a y. Primer término: e a la x es constante. Derivamos seno de y, da coseno de y. Queda e a la x coseno de y.",i:0},
+      {t:"Segundo término: x cuadrado es constante. Derivamos coseno de y, da menos seno de y. Queda menos x cuadrado seno de y.",i:1},
+      {t:"Resultado: e a la x coseno de y menos x cuadrado seno de y.",i:2},
+    ],
+  },
+  {
+    id:23, cat:'mixta', diff:5,
+    funcion:'f(x, y)  =  ln(x²  +  y²)',
+    rule:'Logaritmo de suma de cuadrados — cadena',
+    teoria:'u = x²+y². ∂/∂x[ln(u)] = (1/u)·2x = 2x/(x²+y²). Esta función aparece en física y geometría diferencial.',
+    desarrollo_x:[
+      {annot:'u = x²+y²', eq:'∂f/∂x  =  (1/u) · ∂u/∂x'},
+      {annot:'Calcular ∂u/∂x', eq:'∂u/∂x  =  2x'},
+      {annot:'Sustituir', eq:'(1/(x²+y²)) · 2x'},
+      {annot:'∴  ∂f/∂x', eq:'2x / (x²+y²)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'u = x²+y²', eq:'∂f/∂y  =  (1/u) · ∂u/∂y'},
+      {annot:'Calcular ∂u/∂y', eq:'∂u/∂y  =  2y'},
+      {annot:'Sustituir', eq:'(1/(x²+y²)) · 2y'},
+      {annot:'∴  ∂f/∂y', eq:'2y / (x²+y²)', result:true},
+    ],
+    res_x:'2x/(x²+y²)', res_y:'2y/(x²+y²)',
+    narx:[
+      {t:"Logaritmo de la suma de cuadrados. Esta función aparece en electrostática y en geometría diferencial.",i:-1},
+      {t:"La derivada del logaritmo de u es uno sobre u, por la derivada de u.",i:0},
+      {t:"La derivada de x cuadrado más y cuadrado respecto a x es dos x.",i:1},
+      {t:"Multiplicamos uno sobre la suma de cuadrados por dos x. Resultado: dos x sobre x cuadrado más y cuadrado.",i:2},
+    ],
+    nary:[
+      {t:"Respecto a y: la derivada interna es dos y.",i:1},
+      {t:"Resultado: dos y sobre x cuadrado más y cuadrado.",i:2},
+    ],
+  },
+  {
+    id:24, cat:'mixta', diff:5,
+    funcion:'f(x, y)  =  (x²  −  y²)  /  (x²  +  y²)',
+    rule:'Regla del cociente con polinomios mixtos',
+    teoria:'∂/∂x[u/v] = (u\'v − uv\') / v². Con u=x²−y², v=x²+y². ∂u/∂x=2x, ∂v/∂x=2x, ∂u/∂y=−2y, ∂v/∂y=2y.',
+    desarrollo_x:[
+      {annot:'Identificar u y v', eq:'u = x²−y²  ,  v = x²+y²'},
+      {annot:'u\' = 2x  ,  v\' = 2x', eq:'(respecto a x)'},
+      {annot:'Aplicar u\'v − uv\'', eq:'2x(x²+y²)  −  (x²−y²)·2x'},
+      {annot:'Factorizar 2x', eq:'2x[(x²+y²) − (x²−y²)]  =  2x · 2y²'},
+      {annot:'Dividir entre v²=(x²+y²)²', eq:'4xy² / (x²+y²)²'},
+      {annot:'∴  ∂f/∂x', eq:'4xy² / (x²+y²)²', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Identificar u y v', eq:'u = x²−y²  ,  v = x²+y²'},
+      {annot:'u\' = −2y  ,  v\' = 2y', eq:'(respecto a y)'},
+      {annot:'Aplicar u\'v − uv\'', eq:'−2y(x²+y²)  −  (x²−y²)·2y'},
+      {annot:'Factorizar −2y', eq:'−2y[(x²+y²) + (x²−y²)]  =  −2y · 2x²'},
+      {annot:'Dividir entre v²=(x²+y²)²', eq:'−4x²y / (x²+y²)²'},
+      {annot:'∴  ∂f/∂y', eq:'−4x²y / (x²+y²)²', result:true},
+    ],
+    res_x:'4xy²/(x²+y²)²', res_y:'−4x²y/(x²+y²)²',
+    narx:[
+      {t:"El ejercicio de la regla del cociente con polinomios mixtos. Uno de los mas completos de la coleccion.",i:-1},
+      {t:"Llamamos u al numerador x cuadrado menos y cuadrado, y v al denominador x cuadrado mas y cuadrado.",i:0},
+      {t:"Respecto a x: u prima es dos x, v prima tambien es dos x.",i:1},
+      {t:"Aplicamos la formula: u prima v menos u v prima. Queda dos x por la suma, menos la diferencia por dos x.",i:2},
+      {t:"Factorizamos dos x. Adentro queda la suma menos la diferencia, que es dos y cuadrado.",i:3},
+      {t:"Dividimos todo entre v cuadrado, que es la suma de cuadrados al cuadrado.",i:4},
+      {t:"Resultado: cuatro x y cuadrado sobre la suma de cuadrados al cuadrado.",i:5},
+    ],
+    nary:[
+      {t:"Respecto a y: u prima es menos dos y, v prima es dos y.",i:1},
+      {t:"Aplicamos la formula. Factorizamos menos dos y. Adentro queda la suma mas la diferencia, que es dos x cuadrado.",i:2},
+      {t:"Resultado: menos cuatro x cuadrado y sobre la suma de cuadrados al cuadrado.",i:4},
+    ],
+  },
+
+  /* ══ NIVEL AVANZADO EXTRA — ids 25 a 29 ══════════════════════════════ */
+  {
+    id:25, cat:'mixta', diff:5,
+    funcion:'f(x, y)  =  x^(2/3)  ·  y^(3/2)',
+    rule:'Potencias fraccionarias — producto separado',
+    teoria:'Cuando el producto separa variables, cada una actua como coeficiente de la otra. Regla de la potencia con exponentes fraccionarios.',
+    desarrollo_x:[
+      {annot:'y^(3/2) actua como constante', eq:'∂f/∂x  =  y^(3/2) · ∂/∂x[ x^(2/3) ]'},
+      {annot:'Aplicar regla de la potencia', eq:'∂/∂x[ x^(2/3) ]  =  (2/3) x^(−1/3)', why:'n = 2/3. El nuevo exponente es 2/3 − 1 = −1/3.'},
+      {annot:'Sustituir', eq:'y^(3/2) · (2/3) x^(−1/3)'},
+      {annot:'∴  ∂f/∂x', eq:'(2/3) x^(−1/3) y^(3/2)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'x^(2/3) actua como constante', eq:'∂f/∂y  =  x^(2/3) · ∂/∂y[ y^(3/2) ]'},
+      {annot:'Aplicar regla de la potencia', eq:'∂/∂y[ y^(3/2) ]  =  (3/2) y^(1/2)', why:'n = 3/2. El nuevo exponente es 3/2 − 1 = 1/2.'},
+      {annot:'Sustituir', eq:'x^(2/3) · (3/2) y^(1/2)'},
+      {annot:'∴  ∂f/∂y', eq:'(3/2) x^(2/3) y^(1/2)', result:true},
+    ],
+    res_x:'(2/3) x^(−1/3) y^(3/2)', res_y:'(3/2) x^(2/3) y^(1/2)',
+    narx:[
+      {t:"Potencias fraccionarias en x y en y. La estrategia es la misma: cuando los factores tienen variables separadas, la otra actua como coeficiente.",i:-1},
+      {t:"Y a los tres medios es constante respecto a x. Solo derivamos x a los dos tercios.",i:0},
+      {t:"La regla de la potencia dice: bajamos el exponente y lo restamos en uno. Dos tercios menos uno es menos un tercio.",i:1},
+      {t:"Multiplicamos el coeficiente fraccionario por la potencia de y.",i:2},
+      {t:"Resultado: dos tercios por x a la menos un tercio, por y a los tres medios.",i:3},
+    ],
+    nary:[
+      {t:"Respecto a y: x a los dos tercios es constante. Derivamos y a los tres medios.",i:0},
+      {t:"Tres medios menos uno es un medio. El coeficiente que baja es tres medios.",i:1},
+      {t:"Resultado: tres medios por x a los dos tercios, por y a la un medio.",i:2},
+    ],
+  },
+  {
+    id:26, cat:'cadena', diff:5,
+    funcion:'f(x, y)  =  sen²(xy)',
+    rule:'Regla de la cadena doble — potencia de función trigonométrica',
+    teoria:'f = [sen(xy)]². Se aplica cadena dos veces: primero para la potencia cuadrada, luego para el seno compuesto. ∂/∂x = 2·sen(xy)·cos(xy)·y.',
+    desarrollo_x:[
+      {annot:'Identificar estructura', eq:'f = u²  con  u = sen(xy)'},
+      {annot:'Primera cadena: potencia', eq:'∂f/∂x  =  2·sen(xy) · ∂/∂x[sen(xy)]', why:'Derivada de u² es 2u · u prima.'},
+      {annot:'Segunda cadena: seno', eq:'∂/∂x[sen(xy)]  =  cos(xy) · ∂/∂x[xy]', why:'Derivada del seno es el coseno del mismo argumento, por la derivada interna.'},
+      {annot:'Derivada interna', eq:'∂/∂x[xy]  =  y'},
+      {annot:'Unir las tres piezas', eq:'2·sen(xy) · cos(xy) · y'},
+      {annot:'Usar identidad 2·sen·cos = sen(2u)', eq:'y · sen(2xy)'},
+      {annot:'∴  ∂f/∂x', eq:'y · sen(2xy)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Misma estructura doble', eq:'∂f/∂y  =  2·sen(xy) · cos(xy) · ∂/∂y[xy]'},
+      {annot:'Derivada interna', eq:'∂/∂y[xy]  =  x'},
+      {annot:'Sustituir y usar identidad', eq:'2·sen(xy)·cos(xy) · x  =  x·sen(2xy)'},
+      {annot:'∴  ∂f/∂y', eq:'x · sen(2xy)', result:true},
+    ],
+    res_x:'y·sen(2xy)', res_y:'x·sen(2xy)',
+    narx:[
+      {t:"Seno de xy elevado al cuadrado. Aqui tenemos la cadena doble: una por la potencia, otra por el seno.",i:-1},
+      {t:"Identificamos que f es u al cuadrado, donde u es seno de xy.",i:0},
+      {t:"Primera cadena: la derivada de u cuadrado es dos u por u prima. Queda dos seno de xy, por la derivada del seno.",i:1},
+      {t:"Segunda cadena: la derivada del seno de xy es coseno de xy por la derivada interna de xy.",i:2},
+      {t:"La derivada de xy respecto a x es y, porque x es la variable.",i:3},
+      {t:"Unimos las tres piezas: dos seno xy por coseno xy por y.",i:4},
+      {t:"Usamos la identidad trigonometrica: dos por seno por coseno del mismo angulo es seno del angulo doble.",i:5},
+      {t:"Resultado elegante: y por seno de dos xy.",i:6},
+    ],
+    nary:[
+      {t:"Respecto a y: exactamente el mismo proceso pero la derivada interna de xy respecto a y es x.",i:0},
+      {t:"Resultado: x por seno de dos xy. Notan la simetria con el resultado anterior.",i:1},
+    ],
+  },
+  {
+    id:27, cat:'mixta', diff:5,
+    funcion:'f(x, y)  =  e^(x/y)',
+    rule:'Exponencial con cociente como argumento',
+    teoria:'u = x/y. ∂u/∂x = 1/y. ∂u/∂y = −x/y². La derivada de e^u siempre es e^u · u prima.',
+    desarrollo_x:[
+      {annot:'Identificar', eq:'u = x/y  ,  f = e^u'},
+      {annot:'Aplicar cadena', eq:'∂f/∂x  =  e^(x/y) · ∂/∂x[x/y]'},
+      {annot:'∂/∂x[x/y]', eq:'1/y', why:'y es constante. Derivada de x/y respecto a x es 1/y.'},
+      {annot:'∴  ∂f/∂x', eq:'e^(x/y) / y', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'Identificar', eq:'u = x/y  ,  f = e^u'},
+      {annot:'Aplicar cadena', eq:'∂f/∂y  =  e^(x/y) · ∂/∂y[x/y]'},
+      {annot:'∂/∂y[x/y] = ∂/∂y[x·y^(−1)]', eq:'x · (−1) · y^(−2)  =  −x/y²', why:'x constante. Derivada de y^(−1) es −y^(−2).'},
+      {annot:'∴  ∂f/∂y', eq:'−(x/y²) · e^(x/y)', result:true},
+    ],
+    res_x:'e^(x/y) / y', res_y:'−(x/y²)·e^(x/y)',
+    narx:[
+      {t:"Exponencial de x sobre y. El argumento es un cociente de variables, lo que hace mas delicado el calculo.",i:-1},
+      {t:"La derivada de e a la u siempre es e a la u, multiplicado por la derivada de u.",i:1},
+      {t:"La derivada de x sobre y respecto a x: y es constante, entonces da uno sobre y.",i:2},
+      {t:"Resultado: e a la x sobre y, dividido entre y.",i:3},
+    ],
+    nary:[
+      {t:"Respecto a y: la derivada de x sobre y, que es x por y a la menos uno. X es constante.",i:1},
+      {t:"Derivada de y a la menos uno es menos y a la menos dos. Queda menos x sobre y cuadrado.",i:2},
+      {t:"Resultado: menos x sobre y cuadrado, multiplicado por e a la x sobre y.",i:3},
+    ],
+  },
+  {
+    id:28, cat:'mixta', diff:5,
+    funcion:'f(x, y)  =  x · arcsen(y/x)',
+    rule:'Producto con función inversa trigonométrica',
+    teoria:'Regla del producto: u=x, v=arcsen(y/x). ∂/∂x[arcsen(u)] = 1/√(1−u²). La derivada del argumento y/x es clave.',
+    desarrollo_x:[
+      {annot:'u = x  ,  v = arcsen(y/x)', eq:'Regla del producto'},
+      {annot:'Derivadas', eq:'u\' = 1  ,  v\' = ?'},
+      {annot:'Derivar arcsen(y/x) respecto a x', eq:'v\'  =  (1/√(1−y²/x²)) · ∂/∂x[y/x]', why:'Cadena: derivada exterior de arcsen es 1/raiz(1 − arg cuadrado).'},
+      {annot:'∂/∂x[y/x] = ∂/∂x[y·x^(−1)]', eq:'y·(−x^(−2))  =  −y/x²'},
+      {annot:'Simplificar √(1−y²/x²)', eq:'√((x²−y²)/x²)  =  √(x²−y²)/x'},
+      {annot:'v\' = (x/√(x²−y²)) · (−y/x²)', eq:'=  −y / (x·√(x²−y²))'},
+      {annot:'Aplicar u\'v + uv\'', eq:'arcsen(y/x)  +  x · (−y/(x·√(x²−y²)))'},
+      {annot:'∴  ∂f/∂x', eq:'arcsen(y/x)  −  y/√(x²−y²)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'u = x (constante en y)', eq:'∂f/∂y  =  x · ∂/∂y[arcsen(y/x)]'},
+      {annot:'Derivar arcsen(y/x) respecto a y', eq:'(1/√(1−y²/x²)) · (1/x)'},
+      {annot:'Simplificar denominador', eq:'(x/√(x²−y²)) · (1/x)  =  1/√(x²−y²)'},
+      {annot:'Multiplicar por x', eq:'x · (1/√(x²−y²))'},
+      {annot:'∴  ∂f/∂y', eq:'x / √(x²−y²)', result:true},
+    ],
+    res_x:'arcsen(y/x) − y/√(x²−y²)', res_y:'x/√(x²−y²)',
+    narx:[
+      {t:"Este ejercicio combina regla del producto con la funcion arcoseno. Es de los mas exigentes.",i:-1},
+      {t:"Tenemos u igual a x y v igual a arcoseno de y sobre x.",i:0},
+      {t:"U prima es uno. Para v prima necesitamos la cadena: la derivada del arcoseno de u es uno sobre raiz de uno menos u cuadrado.",i:1},
+      {t:"La derivada interna de y sobre x respecto a x: y es constante, derivamos x a la menos uno, da menos y sobre x cuadrado.",i:2},
+      {t:"Simplificamos la raiz en el denominador. Uno menos y cuadrado sobre x cuadrado, con denominador comun, da x cuadrado menos y cuadrado sobre x cuadrado.",i:3},
+      {t:"La raiz cuadrada de eso es raiz de x cuadrado menos y cuadrado, sobre x.",i:4},
+      {t:"Combinamos todo y simplificamos.",i:5},
+      {t:"Aplicamos la formula del producto: u prima v mas u v prima.",i:6},
+      {t:"Resultado: arcoseno de y sobre x, menos y sobre raiz de x cuadrado menos y cuadrado.",i:7},
+    ],
+    nary:[
+      {t:"Respecto a y: x actua como coeficiente constante afuera.",i:0},
+      {t:"Derivada del arcoseno de y sobre x respecto a y: la derivada interna de y sobre x respecto a y es uno sobre x.",i:1},
+      {t:"Simplificamos el denominador igual que antes.",i:2},
+      {t:"Multiplicamos por x afuera. Los x se cancelan.",i:3},
+      {t:"Resultado: x sobre raiz de x cuadrado menos y cuadrado.",i:4},
+    ],
+  },
+  {
+    id:29, cat:'mixta', diff:5,
+    funcion:'f(x, y)  =  ln(x + √(x²+y²))',
+    rule:'Logaritmo con argumento complejo — función de Gudermannian',
+    teoria:'Esta es la funcion arcoseno hiperbólico: arcsenh(x/y) = ln(x/y + √(1+(x/y)²)). Requiere cadena anidada con raiz y logaritmo.',
+    desarrollo_x:[
+      {annot:'u = x + √(x²+y²)', eq:'f = ln(u)'},
+      {annot:'Aplicar cadena', eq:'∂f/∂x  =  (1/u) · ∂u/∂x'},
+      {annot:'Expandir ∂u/∂x', eq:'∂u/∂x  =  1  +  ∂/∂x[√(x²+y²)]'},
+      {annot:'∂/∂x[√(x²+y²)]', eq:'x / √(x²+y²)', why:'Cadena: derivada de raiz es 1/(2raiz), por derivada interna 2x.'},
+      {annot:'∂u/∂x', eq:'1  +  x/√(x²+y²)  =  (√(x²+y²) + x) / √(x²+y²)'},
+      {annot:'(1/u) · ∂u/∂x', eq:'1/(x+√(x²+y²)) · (x+√(x²+y²))/√(x²+y²)', why:'El numerador (x+√(x²+y²)) cancela con el denominador u.'},
+      {annot:'∴  ∂f/∂x', eq:'1 / √(x²+y²)', result:true},
+    ],
+    desarrollo_y:[
+      {annot:'u = x + √(x²+y²)', eq:'f = ln(u)'},
+      {annot:'Aplicar cadena', eq:'∂f/∂y  =  (1/u) · ∂u/∂y'},
+      {annot:'∂u/∂y = ∂/∂y[x + √(x²+y²)]', eq:'0  +  y/√(x²+y²)', why:'Derivada de x respecto a y es cero. Cadena en la raiz da y/raiz.'},
+      {annot:'(1/u) · (y/√(x²+y²))', eq:'y / [(x+√(x²+y²)) · √(x²+y²)]'},
+      {annot:'∴  ∂f/∂y', eq:'y / [(x+√(x²+y²)) · √(x²+y²)]', result:true},
+    ],
+    res_x:'1/√(x²+y²)', res_y:'y/[(x+√(x²+y²))·√(x²+y²)]',
+    narx:[
+      {t:"El ejercicio de mayor complejidad: logaritmo de x mas raiz de x cuadrado mas y cuadrado. Esta funcion aparece en calculo vectorial y en fisica matematica.",i:-1},
+      {t:"Llamamos u al argumento del logaritmo: x mas la raiz.",i:0},
+      {t:"La derivada del logaritmo de u es uno sobre u, multiplicado por la derivada de u.",i:1},
+      {t:"La derivada de u es la derivada de x mas la derivada de la raiz.",i:2},
+      {t:"La derivada de la raiz de x cuadrado mas y cuadrado respecto a x: cadena, da x sobre la raiz.",i:3},
+      {t:"Entonces la derivada de u es uno mas x sobre la raiz. Con denominador comun, es la raiz mas x, sobre la raiz.",i:4},
+      {t:"Ahora multiplicamos uno sobre u por eso. El factor raiz mas x aparece arriba y en el denominador de u. Se cancelan perfectamente.",i:5},
+      {t:"Resultado sorprendentemente limpio: uno sobre raiz de x cuadrado mas y cuadrado.",i:6},
+    ],
+    nary:[
+      {t:"Respecto a y: la derivada de u. X no tiene y, da cero. La derivada de la raiz respecto a y es y sobre la raiz.",i:0},
+      {t:"Entonces la derivada de u es y sobre la raiz.",i:1},
+      {t:"Multiplicamos uno sobre u por y sobre la raiz. El resultado no simplifica tanto.",i:2},
+      {t:"Resultado: y sobre la cantidad x mas raiz, multiplicado por la raiz. Es la forma mas compacta.",i:3},
+    ],
+  },
+];
+
+/* ── ESTADO ── */
+let cat='todos', search='', curId=null;
+const seen=new Set();
+const TOTAL=EX.length;
+
+const DIFF_LABEL=['','Básica','Intermedia','Media-Alta','Avanzada','Expert'];
+const DIFF_CLS=['','diff-1','diff-2','diff-3','diff-4','diff-5'];
+
+function filtered(){
+  return EX.filter(e=>{
+    const mc=cat==='todos'||e.cat===cat;
+    const ms=e.funcion.toLowerCase().includes(search.toLowerCase())||
+             e.rule.toLowerCase().includes(search.toLowerCase());
+    return mc&&ms;
+  });
+}
+function setCat(c,el){
+  cat=c;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+function doFilter(){
+  search=document.getElementById('search').value;
+  renderList();
+}
+function renderList(){
+  const list=document.getElementById('ex-list');
+  const f=filtered();
+  if(!f.length){list.innerHTML='<div class="no-results">Sin resultados.</div>';return;}
+  list.innerHTML=f.map(ex=>`
+    <div class="ex-item ${curId===ex.id?'active':''} ${seen.has(ex.id)?'done':''}"
+         onclick="load(${ex.id})">
+      <div class="ex-num">${seen.has(ex.id)?'✓':ex.id+1}</div>
+      <div class="ex-text">
+        <div class="ex-name">${pow(ex.funcion)}</div>
+        <div class="ex-tag">${ex.rule} <span class="diff-badge ${DIFF_CLS[ex.diff]}">${DIFF_LABEL[ex.diff]}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+/* ── RENDER VISUAL (pow + frac) ── */
+function frac(n,d){return `<span class="vfrac"><span class="vfrac-n">${n}</span><span class="vfrac-d">${d}</span></span>`;}
+function pow(s){
+  if(typeof s!=='string')return '';
+  s=s.replace(/\^(\([^)]+\))/g,(m,inner)=>`<sup>${inner.slice(1,-1)}</sup>`);
+  s=s.replace(/\^(-?[\d]+)/g,(m,n)=>`<sup>${n}</sup>`);
+  s=s.replace(/\(([^()\/]+)\)\s*\/\s*\(([^()\/]+)\)/g,(m,n,d)=>frac(n.trim(),d.trim()));
+  s=s.replace(/((?:[−]?[\d]*[a-zA-Zπ()·⁰¹²³⁴⁵⁶⁷⁸⁹]*(?:<sup>[^<]*<\/sup>)*)+)\s*\/\s*\(([^()]+)\)/g,(m,n,d)=>n.trim()?frac(n.trim(),d.trim()):m);
+  s=s.replace(/\(([^()\/]+)\)\s*\/\s*((?:[−]?[\d]*[a-zA-Zπ·⁰¹²³⁴⁵⁶⁷⁸⁹]*(?:<sup>[^<]*<\/sup>)*)+)/g,(m,n,d)=>d.trim()?frac(n.trim(),d.trim()):m);
+  const fracRe=/((?:[−]?[\d]*[a-zA-Zπ·⁰¹²³⁴⁵⁶⁷⁸⁹]*(?:<sup>[^<]*<\/sup>)*)+)\s*\/\s*((?:[−]?[\d]*[a-zA-Zπ·⁰¹²³⁴⁵⁶⁷⁸⁹]*(?:<sup>[^<]*<\/sup>)*)+)/g;
+  s=s.replace(fracRe,(m,n,d)=>(!n.trim()||!d.trim())?m:frac(n.trim(),d.trim()));
+  return s;
+}
+
+/* ── LOAD EXERCISE ── */
+function load(id){
+  if(speaking)stopVoice();
+  const ex=EX[id];
+  curId=id;
+  seen.add(id);
+  updateProgress();
+  renderList();
+
+  const buildLines=(steps,suffix)=>steps.map((line,i)=>{
+    const isRes = !!line.result;
+    const hasEq = line.eq && line.eq.trim() !== '';
+    const hasAnnot = line.annot && line.annot.trim() !== '';
+    if(!hasAnnot && !hasEq) return '';
+
+    let html = '';
+    if(hasEq){
+      /* Fila normal: anotación izquierda + fórmula derecha */
+      html = `<div class="dev-line fade-in" id="step-${suffix}-${i}" style="transition-delay:${i*.05}s">
+        <div class="line-annot ${isRes?'result-annot':''}">${line.annot||''}</div>
+        <div class="line-formula ${isRes?'highlight':''}">${pow(line.eq)}</div>
+      </div>`;
+    } else {
+      /* Solo anotación (eq vacío) → mostrar como nota pedagógica de ancho completo */
+      html = `<div class="dev-line dev-note fade-in" id="step-${suffix}-${i}" style="transition-delay:${i*.05}s">
+        <div class="note-text">${pow(line.annot)}</div>
+      </div>`;
+    }
+    if(line.why || line.warn){
+      const cls = line.warn ? 'why-box why-warn' : 'why-box';
+      const pre = line.warn ? '⚠ ' : '';
+      html += `<div class="${cls} fade-in" style="transition-delay:${i*.05+.03}s">${pre}${pow(line.why||line.warn||'')}</div>`;
+    }
+    return html;
+  }).join('');
+
+  document.getElementById('content').innerHTML=`
+    <div class="ex-top-bar">
+      <div class="ex-meta">
+        <div class="ex-num-big">${id+1}</div>
+        <div class="ex-head-right">
+          <div class="ex-head-label">Ejercicio ${id+1} de ${TOTAL} · Dificultad <span class="diff-badge ${DIFF_CLS[ex.diff]}">${DIFF_LABEL[ex.diff]}</span></div>
+          <div class="ex-integral-big">${pow(ex.funcion)}</div>
+          <span class="ex-rule-badge">∂ ${ex.rule}</span>
+        </div>
+      </div>
+      <div class="teoria-box"><b>Regla:</b> ${pow(ex.teoria)}</div>
+    </div>
+    <div class="voice-bar">
+      <button class="voice-btn" id="voice-btn" onclick="toggleVoice()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+        Escuchar explicación
+      </button>
+      <div class="voice-status" id="voice-status">Presiona para escuchar la explicacion.</div>
+      <div class="voice-progress" id="voice-progress"></div>
+
+    </div>
+    <div class="sol-scroll">
+      <div class="cuadernos-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+        <div class="cuaderno">
+          <div class="cuaderno-header">
+            <div class="cuaderno-icon">∂x</div>
+            <div class="cuaderno-section-title">Derivada respecto a x</div>
+          </div>
+          <div class="cuaderno-body"><div class="dev-lines">${buildLines(ex.desarrollo_x,'x')}</div></div>
+        </div>
+        <div class="cuaderno">
+          <div class="cuaderno-header">
+            <div class="cuaderno-icon">∂y</div>
+            <div class="cuaderno-section-title">Derivada respecto a y</div>
+          </div>
+          <div class="cuaderno-body"><div class="dev-lines">${buildLines(ex.desarrollo_y,'y')}</div></div>
+        </div>
+      </div>
+      <div class="res-grid fade-in" style="transition-delay:${Math.max(ex.desarrollo_x.length,ex.desarrollo_y.length)*.05+.1}s">
+        <div class="res-card">
+          <div class="res-card-label">∂f/∂x</div>
+          <div class="res-card-formula">${pow(ex.res_x)}</div>
+        </div>
+        <div class="res-card">
+          <div class="res-card-label">∂f/∂y</div>
+          <div class="res-card-formula">${pow(ex.res_y)}</div>
+        </div>
+      </div>
+      <div class="resultado-check fade-in" style="transition-delay:${Math.max(ex.desarrollo_x.length,ex.desarrollo_y.length)*.05+.2}s;padding:0 0 24px;font-size:12px;color:var(--gray3);font-style:italic">
+        Las derivadas parciales indican la tasa de cambio de f en la dirección de cada variable, manteniendo la otra fija.
+      </div>
+    </div>`;
+
+  document.getElementById('footer').style.display='flex';
+  updateNav();
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.fade-in').forEach(el=>setTimeout(()=>el.classList.add('show'),10));
+  });
+}
+
+function nav(d){
+  const f=filtered();
+  const i=f.findIndex(e=>e.id===curId);
+  const next=f[i+d];
+  if(next)load(next.id);
+}
+function updateNav(){
+  const f=filtered();
+  const i=f.findIndex(e=>e.id===curId);
+  document.getElementById('btn-prev').disabled=i<=0;
+  document.getElementById('btn-next').disabled=i>=f.length-1;
+  document.getElementById('counter').textContent=i>=0?`Ejercicio ${i+1} de ${f.length}`:'';
+}
+function updateProgress(){
+  const pct=seen.size/TOTAL*100;
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('done-badge').textContent=`${seen.size} / ${TOTAL} vistos`;
+}
+
+/* ═══ VOZ — sistema exacto del aplicativo de Integrales ═══════════════════ */
+let synth = window.speechSynthesis;
+let speaking = false;
+let narLines = [];
+let narIdx = 0;
+let selectedVoice = null;
+let mouthInterval = null;
+
+/* ── Seleccionar la mejor voz masculina en español ── */
+function pickVoice(){
+  const all = synth.getVoices();
+  const priority = [
+    v => v.name.includes('Google') && v.lang.startsWith('es') && v.name.toLowerCase().includes('male'),
+    v => v.name === 'Google español' || v.name === 'Google Spanish',
+    v => v.name.includes('Jorge'),
+    v => v.name.includes('Diego'),
+    v => v.name.includes('Carlos'),
+    v => v.name.includes('Andrés') || v.name.includes('Andres'),
+    v => v.name.includes('Pablo'),
+    v => v.name.includes('Google') && v.lang.startsWith('es'),
+    v => v.lang === 'es-CO',
+    v => v.lang === 'es-MX',
+    v => v.lang === 'es-US',
+    v => v.lang.startsWith('es'),
+  ];
+  for(const fn of priority){
+    const v = all.find(fn);
+    if(v){ selectedVoice = v; return; }
+  }
+  selectedVoice = null;
+}
+
+/* ── Guiones pedagógicos escritos a mano, igual que en Integrales ── */
+const NARRATION = {
+  0:[
+    {t:"¡Hola! Soy Edwin Ríos, tu profe de Matemáticas Tres en la UDI. Vamos con el primer ejercicio.", i:-1},
+    {t:"Tenemos f de x, y igual a tres x más cinco y. La derivada respecto a x trata la y como constante.", i:0},
+    {t:"Tres x derivado da tres. Y cinco y, al ser constante respecto a x, su derivada es cero.", i:1},
+    {t:"Sumamos tres más cero.", i:2},
+    {t:"La derivada parcial respecto a x es tres.", i:3},
+  ],
+  nary0:[
+    {t:"Ahora respecto a y. Esta vez la x es la constante.", i:0},
+    {t:"Tres x da cero porque no tiene y. Y cinco y derivado da cinco.", i:1},
+    {t:"La derivada parcial respecto a y es cinco.", i:2},
+  ],
+  1:[
+    {t:"Segundo ejercicio: x cuadrado más y cuadrado. Función muy clásica.", i:-1},
+    {t:"Respecto a x: y cuadrado es constante, da cero.", i:0},
+    {t:"La derivada de x cuadrado es dos x.", i:1},
+  ],
+  nary1:[
+    {t:"Respecto a y: x cuadrado es constante, da cero.", i:0},
+    {t:"La derivada de y cuadrado es dos y.", i:1},
+  ],
+  2:[
+    {t:"Polinomio con tres términos: cuatro x al cubo, menos dos y cuadrado, más siete.", i:-1},
+    {t:"Respecto a x: solo derivamos los términos con x. Dos y cuadrado da cero. El siete también.", i:0},
+    {t:"Cuatro x al cubo derivado es doce x al cuadrado. Bajamos el tres y multiplicamos por cuatro.", i:1},
+  ],
+  nary2:[
+    {t:"Respecto a y: cuatro x al cubo es constante, da cero. Derivamos dos y cuadrado.", i:0},
+    {t:"La derivada de dos y cuadrado es cuatro y. El siete sigue dando cero.", i:1},
+  ],
+  3:[
+    {t:"Función con términos mixtos: x cuadrado y más x y cuadrado. Dos términos con ambas variables.", i:-1},
+    {t:"Respecto a x: en x cuadrado y, la y actúa como coeficiente. Derivamos x cuadrado y obtenemos dos x y.", i:0},
+    {t:"En x y cuadrado, y cuadrado es el coeficiente. Derivamos x y obtenemos y cuadrado.", i:1},
+    {t:"Sumamos los dos resultados.", i:2},
+    {t:"La derivada respecto a x es dos x y más y cuadrado.", i:3},
+  ],
+  nary3:[
+    {t:"Respecto a y: en x cuadrado y, x cuadrado es el coeficiente. Derivamos y y obtenemos x cuadrado.", i:0},
+    {t:"En x y cuadrado, x es el coeficiente. Derivamos y cuadrado y obtenemos dos x y.", i:1},
+    {t:"Sumamos los resultados.", i:2},
+    {t:"La derivada respecto a y es x cuadrado más dos x y.", i:3},
+  ],
+  4:[
+    {t:"Función exponencial: e elevado a x más y. Usamos la regla de la cadena.", i:-1},
+    {t:"La derivada de e a la u es e a la u por u prima. La derivada de x más y respecto a x es uno.", i:0},
+    {t:"Multiplicamos e a la x más y por uno.", i:1},
+    {t:"La derivada respecto a x es e a la x más y.", i:2},
+  ],
+  nary4:[
+    {t:"Respecto a y: la derivada de x más y respecto a y también es uno.", i:0},
+    {t:"La derivada respecto a y también es e a la x más y. Tiene sentido por simetría.", i:1},
+  ],
+  5:[
+    {t:"Seno de x más coseno de y. Dos funciones trigonométricas básicas.", i:-1},
+    {t:"Respecto a x: coseno de y es constante, da cero. Derivamos seno de x.", i:0},
+    {t:"La derivada del seno es el coseno. Queda coseno de x.", i:1},
+    {t:"La derivada respecto a x es coseno de x.", i:2},
+  ],
+  nary5:[
+    {t:"Respecto a y: seno de x es constante, da cero. Derivamos coseno de y.", i:0},
+    {t:"La derivada del coseno es menos el seno. Queda menos seno de y.", i:1},
+    {t:"La derivada respecto a y es menos seno de y.", i:2},
+  ],
+  6:[
+    {t:"Dos exponenciales: e a la dos x más e a la tres y.", i:-1},
+    {t:"Respecto a x: e a la tres y es constante. Derivamos e a la dos x con la cadena.", i:0},
+    {t:"La derivada interna de dos x es dos. Queda dos por e a la dos x.", i:1},
+    {t:"La derivada respecto a x es dos e a la dos x.", i:2},
+  ],
+  nary6:[
+    {t:"Respecto a y: e a la dos x es constante. Derivamos e a la tres y.", i:0},
+    {t:"La derivada interna de tres y es tres. Queda tres por e a la tres y.", i:1},
+    {t:"La derivada respecto a y es tres e a la tres y.", i:2},
+  ],
+  7:[
+    {t:"Logaritmo natural de x cuadrado más y cuadrado. Cadena con el logaritmo.", i:-1},
+    {t:"La derivada de logaritmo de u es uno sobre u, por la derivada interna.", i:0},
+    {t:"La derivada interna de x cuadrado más y cuadrado respecto a x es dos x.", i:1},
+    {t:"Queda dos x sobre x cuadrado más y cuadrado.", i:2},
+    {t:"La derivada respecto a x es dos x sobre x cuadrado más y cuadrado.", i:3},
+  ],
+  nary7:[
+    {t:"Respecto a y: la derivada interna es dos y.", i:0},
+    {t:"Queda dos y sobre x cuadrado más y cuadrado.", i:1},
+    {t:"Nota la simetría perfecta entre las dos derivadas.", i:2},
+  ],
+  8:[
+    {t:"Producto de funciones separadas: e a la x por seno de y.", i:-1},
+    {t:"Respecto a x: seno de y es constante y actúa como coeficiente. Derivamos e a la x.", i:0},
+    {t:"La derivada de e a la x es e a la x. El coeficiente seno de y se mantiene.", i:1},
+    {t:"La derivada respecto a x es e a la x por seno de y.", i:2},
+  ],
+  nary8:[
+    {t:"Respecto a y: e a la x es el coeficiente. Derivamos seno de y.", i:0},
+    {t:"La derivada del seno es el coseno. El coeficiente e a la x se mantiene.", i:1},
+    {t:"La derivada respecto a y es e a la x por coseno de y.", i:2},
+  ],
+  9:[
+    {t:"Función racional: x y sobre x más y. Aplicamos la regla del cociente.", i:-1},
+    {t:"Numerador u igual a x y, denominador v igual a x más y.", i:0},
+    {t:"Respecto a x: la derivada de u es y. La derivada de v es uno.", i:1},
+    {t:"Aplicamos la fórmula: u prima v menos u v prima, entre v cuadrado.", i:2},
+    {t:"Sustituimos: y por la suma, menos x y por uno.", i:3},
+    {t:"Expandimos: x y más y cuadrado menos x y. Los x y se cancelan.", i:4},
+    {t:"La derivada respecto a x es y cuadrado sobre la suma al cuadrado.", i:5},
+  ],
+  nary9:[
+    {t:"Respecto a y: la derivada de u es x. La derivada de v es uno.", i:0},
+    {t:"Aplicamos la fórmula: x por la suma, menos x y por uno.", i:1},
+    {t:"Expandimos y los x y se cancelan.", i:2},
+    {t:"La derivada respecto a y es x cuadrado sobre la suma al cuadrado.", i:3},
+  ],
+  10:[
+    {t:"Seno del producto x y. Regla de la cadena sobre el argumento compuesto.", i:-1},
+    {t:"El argumento del seno es u igual a x y.", i:0},
+    {t:"Respecto a x: derivada exterior es coseno de x y. La derivada interna de x y respecto a x es y.", i:1},
+    {t:"Multiplicamos las dos piezas.", i:2},
+    {t:"La derivada respecto a x es y por coseno de x y.", i:3},
+  ],
+  nary10:[
+    {t:"Respecto a y: misma cadena. La derivada interna de x y respecto a y es x.", i:0},
+    {t:"La derivada respecto a y es x por coseno de x y.", i:1},
+  ],
+  11:[
+    {t:"Exponencial con producto en el exponente: e a la x y. Cadena.", i:-1},
+    {t:"El argumento es u igual a x y.", i:0},
+    {t:"Respecto a x: la derivada de e a la u es e a la u por la derivada interna. La derivada de x y respecto a x es y.", i:1},
+    {t:"La derivada respecto a x es y por e a la x y.", i:2},
+  ],
+  nary11:[
+    {t:"Respecto a y: la derivada interna de x y respecto a y es x.", i:0},
+    {t:"La derivada respecto a y es x por e a la x y.", i:1},
+  ],
+  12:[
+    {t:"Arcotangente de y sobre x. Cadena con función inversa trigonométrica.", i:-1},
+    {t:"La derivada de arcotangente de u es uno sobre uno más u cuadrado, por la derivada interna.", i:0},
+    {t:"Respecto a x: la derivada interna de y sobre x es menos y sobre x cuadrado.", i:1},
+    {t:"Calculamos uno más y cuadrado sobre x cuadrado con denominador común.", i:2},
+    {t:"Uno más y cuadrado sobre x cuadrado nos da x cuadrado más y cuadrado, sobre x cuadrado.", i:3},
+    {t:"El recíproco es x cuadrado sobre la suma. Multiplicamos por menos y sobre x cuadrado.", i:4},
+    {t:"La derivada respecto a x es menos y sobre x cuadrado más y cuadrado.", i:5},
+  ],
+  nary12:[
+    {t:"Respecto a y: la derivada interna de y sobre x respecto a y es uno sobre x.", i:0},
+    {t:"Multiplicamos el recíproco por uno sobre x.", i:1},
+    {t:"La derivada respecto a y es x sobre x cuadrado más y cuadrado.", i:2},
+  ],
+  13:[
+    {t:"Potencia con producto de variables: x cuadrado por y al cubo.", i:-1},
+    {t:"Respecto a x: y al cubo actúa como coeficiente. Derivamos x cuadrado.", i:0},
+    {t:"La derivada de x cuadrado es dos x. Multiplicamos por y al cubo.", i:1},
+    {t:"La derivada respecto a x es dos x y al cubo.", i:2},
+  ],
+  nary13:[
+    {t:"Respecto a y: x cuadrado actúa como coeficiente. Derivamos y al cubo.", i:0},
+    {t:"La derivada de y al cubo es tres y cuadrado. Multiplicamos por x cuadrado.", i:1},
+    {t:"La derivada respecto a y es tres x cuadrado y cuadrado.", i:2},
+  ],
+  14:[
+    {t:"Potencia de suma: x más y, todo a la cuarta. Cadena.", i:-1},
+    {t:"Identificamos u igual a x más y.", i:0},
+    {t:"Respecto a x: derivada exterior es cuatro u al cubo. La derivada interna de x más y respecto a x es uno.", i:1},
+    {t:"Sustituimos u.", i:2},
+    {t:"La derivada respecto a x es cuatro por la suma al cubo.", i:3},
+  ],
+  nary14:[
+    {t:"Respecto a y: la derivada interna también es uno.", i:0},
+    {t:"La derivada respecto a y también es cuatro por la suma al cubo. Simetría perfecta.", i:1},
+  ],
+  15:[
+    {t:"Seno de x cuadrado y. El argumento del seno es un producto mixto.", i:-1},
+    {t:"Identificamos u igual a x cuadrado y.", i:0},
+    {t:"Respecto a x: derivada exterior es coseno de x cuadrado y. La derivada interna de x cuadrado y respecto a x: y es constante, derivamos x cuadrado, da dos x y.", i:1},
+    {t:"Multiplicamos coseno de x cuadrado y, por dos x y.", i:2},
+    {t:"La derivada respecto a x es dos x y por coseno de x cuadrado y.", i:3},
+  ],
+  nary15:[
+    {t:"Respecto a y: la derivada interna de x cuadrado y respecto a y: x cuadrado es constante, da x cuadrado.", i:0},
+    {t:"Multiplicamos coseno de x cuadrado y, por x cuadrado.", i:1},
+    {t:"La derivada respecto a y es x cuadrado por coseno de x cuadrado y.", i:2},
+  ],
+  16:[
+    {t:"Coseno de tres x menos dos y. Argumento lineal mixto.", i:-1},
+    {t:"Identificamos u igual a tres x menos dos y.", i:0},
+    {t:"Respecto a x: la derivada exterior del coseno es menos seno. La derivada interna de tres x menos dos y respecto a x es tres.", i:1},
+    {t:"Multiplicamos menos seno del argumento, por tres.", i:2},
+    {t:"La derivada respecto a x es menos tres seno de tres x menos dos y.", i:3},
+  ],
+  nary16:[
+    {t:"Respecto a y: la derivada interna de tres x menos dos y respecto a y es menos dos.", i:0},
+    {t:"Multiplicamos menos seno, por menos dos. Los negativos se cancelan.", i:1},
+    {t:"La derivada respecto a y es dos seno de tres x menos dos y.", i:2},
+  ],
+  17:[
+    {t:"Raíz cuadrada de x cuadrado más y cuadrado. Cadena con la raíz.", i:-1},
+    {t:"Reescribimos la raíz como u a la un medio.", i:0},
+    {t:"Respecto a x: la derivada exterior es un medio por u a la menos un medio. La derivada interna es dos x.", i:1},
+    {t:"Un medio por dos x sobre raíz. El dos se cancela con el medio.", i:2},
+    {t:"La derivada respecto a x es x sobre la raíz de x cuadrado más y cuadrado.", i:3},
+  ],
+  nary17:[
+    {t:"Respecto a y: la derivada interna es dos y.", i:0},
+    {t:"Un medio por dos y sobre raíz. El dos se cancela igual.", i:1},
+    {t:"La derivada respecto a y es y sobre la raíz.", i:2},
+  ],
+  18:[
+    {t:"Producto de tres factores: x cuadrado, y, y e a la x. Usamos la regla del producto.", i:-1},
+    {t:"Respecto a x: y es constante y actúa como coeficiente. Derivamos x cuadrado e a la x con la regla del producto.", i:0},
+    {t:"La derivada de x cuadrado por e a la x es: dos x por e a la x, más x cuadrado por e a la x.", i:1},
+    {t:"Factorizamos e a la x afuera.", i:2},
+    {t:"Multiplicamos por el coeficiente y.", i:3},
+    {t:"La derivada respecto a x es y e a la x por dos x más x cuadrado.", i:4},
+  ],
+  nary18:[
+    {t:"Respecto a y: x cuadrado e a la x es constante. Derivamos y.", i:0},
+    {t:"La derivada de y es uno.", i:1},
+    {t:"La derivada respecto a y es x cuadrado e a la x.", i:2},
+  ],
+  19:[
+    {t:"Tangente de x sobre y. El argumento es un cociente.", i:-1},
+    {t:"La derivada de tangente de u es secante cuadrada de u, por la derivada interna.", i:0},
+    {t:"Respecto a x: la derivada interna de x sobre y respecto a x es uno sobre y.", i:1},
+    {t:"La derivada respecto a x es secante cuadrada de x sobre y, dividido entre y.", i:2},
+  ],
+  nary19:[
+    {t:"Respecto a y: la derivada interna de x sobre y respecto a y: x es constante, derivamos y a la menos uno, da menos x sobre y cuadrado.", i:0},
+    {t:"La derivada respecto a y es menos x sobre y cuadrado, multiplicado por secante cuadrada de x sobre y.", i:1},
+  ],
+  20:[
+    {t:"Cociente con polinomio mixto: x cuadrado sobre y cuadrado más uno.", i:-1},
+    {t:"Numerador u igual a x cuadrado, denominador v igual a y cuadrado más uno.", i:0},
+    {t:"Respecto a x: la derivada de u es dos x. La derivada de v respecto a x es cero, porque v solo tiene y.", i:1},
+    {t:"La fórmula del cociente: u prima v menos u v prima, entre v cuadrado.", i:2},
+    {t:"Queda dos x por v cuadrado más uno, menos x cuadrado por cero.", i:3},
+    {t:"El segundo término desaparece.", i:4},
+    {t:"La derivada respecto a x es dos x sobre y cuadrado más uno.", i:5},
+  ],
+  nary20:[
+    {t:"Respecto a y: la derivada de u respecto a y es cero. La derivada de v es dos y.", i:0},
+    {t:"Queda cero menos x cuadrado por dos y, entre v cuadrado.", i:1},
+    {t:"Simplificamos el primer término que es cero.", i:2},
+    {t:"La derivada respecto a y es menos dos x cuadrado y, sobre la cantidad y cuadrado más uno al cuadrado.", i:3},
+  ],
+  21:[
+    {t:"Logaritmo de la raíz cuadrada de x cuadrado y. Simplificamos con propiedades del logaritmo.", i:-1},
+    {t:"La raíz cuadrada es la potencia un medio. El logaritmo baja el exponente.", i:0},
+    {t:"Queda un medio por logaritmo de x cuadrado y. Separamos: logaritmo de x cuadrado más logaritmo de y.", i:1},
+    {t:"Respecto a x: derivamos un medio por dos logaritmo de x. La derivada de logaritmo de x es uno sobre x.", i:2},
+    {t:"Un medio por dos sobre x. El dos se cancela con el dos del logaritmo.", i:3},
+    {t:"La derivada respecto a x es uno sobre x.", i:4},
+  ],
+  nary21:[
+    {t:"Respecto a y: solo el término un medio por logaritmo de y tiene y.", i:0},
+    {t:"La derivada de logaritmo de y es uno sobre y. Multiplicamos por un medio.", i:1},
+    {t:"La derivada respecto a y es uno sobre dos y.", i:2},
+  ],
+  22:[
+    {t:"Coseno al cuadrado de x y. Doble cadena: la potencia y el coseno.", i:-1},
+    {t:"Identificamos f igual a u cuadrado, donde u es coseno de x y.", i:0},
+    {t:"Respecto a x: primera cadena, la derivada de u cuadrado es dos u por u prima.", i:1},
+    {t:"Segunda cadena, la derivada del coseno de x y es menos seno de x y, por la derivada interna y.", i:2},
+    {t:"Multiplicamos: dos coseno de x y, por menos seno de x y, por y.", i:3},
+    {t:"Usamos la identidad dos seno coseno igual a seno del ángulo doble.", i:4},
+    {t:"La derivada respecto a x es menos y seno de dos x y.", i:5},
+  ],
+  nary22:[
+    {t:"Respecto a y: misma doble cadena. La derivada interna de x y respecto a y es x.", i:0},
+    {t:"Multiplicamos: dos coseno de x y, por menos seno de x y, por x.", i:1},
+    {t:"La derivada respecto a y es menos x seno de dos x y.", i:2},
+  ],
+  23:[
+    {t:"Dos términos mixtos: x cuadrado y cuadrado más x al cubo.", i:-1},
+    {t:"Respecto a x: en el primer término, y cuadrado es el coeficiente. Derivamos x cuadrado, da dos x.", i:0},
+    {t:"En el segundo término, derivamos x al cubo, da tres x cuadrado.", i:1},
+    {t:"Sumamos los resultados.", i:2},
+    {t:"La derivada respecto a x es dos x y cuadrado más tres x cuadrado.", i:3},
+  ],
+  nary23:[
+    {t:"Respecto a y: en el primer término, x cuadrado es el coeficiente. Derivamos y cuadrado, da dos y.", i:0},
+    {t:"El segundo término x al cubo no tiene y, su derivada es cero.", i:1},
+    {t:"La derivada respecto a y es dos x cuadrado y.", i:2},
+  ],
+  24:[
+    {t:"Cociente con polinomios mixtos: x cuadrado menos y cuadrado, sobre x cuadrado más y cuadrado.", i:-1},
+    {t:"Identificamos u igual a x cuadrado menos y cuadrado, v igual a x cuadrado más y cuadrado.", i:0},
+    {t:"Respecto a x: u prima es dos x, v prima también es dos x.", i:1},
+    {t:"Aplicamos la fórmula del cociente: dos x por v, menos u por dos x.", i:2},
+    {t:"Factorizamos dos x. Adentro queda v menos u, que es dos y cuadrado.", i:3},
+    {t:"Dividimos todo entre v cuadrado.", i:4},
+    {t:"La derivada respecto a x es cuatro x y cuadrado sobre v al cuadrado.", i:5},
+  ],
+  nary24:[
+    {t:"Respecto a y: u prima es menos dos y, v prima es dos y.", i:0},
+    {t:"Aplicamos la fórmula. Factorizamos menos dos y.", i:1},
+    {t:"Adentro queda v más u, que es dos x cuadrado.", i:2},
+    {t:"Dividimos entre v cuadrado.", i:3},
+    {t:"La derivada respecto a y es menos cuatro x cuadrado y sobre v al cuadrado.", i:4},
+  ],
+  25:[
+    {t:"Potencias fraccionarias: x a los dos tercios por y a los tres medios.", i:-1},
+    {t:"Respecto a x: y a los tres medios es el coeficiente. Derivamos x a los dos tercios.", i:0},
+    {t:"Dos tercios menos uno es menos un tercio. El coeficiente que baja es dos tercios.", i:1},
+    {t:"Multiplicamos por el coeficiente y a los tres medios.", i:2},
+    {t:"La derivada respecto a x es dos tercios por x a la menos un tercio por y a los tres medios.", i:3},
+  ],
+  nary25:[
+    {t:"Respecto a y: x a los dos tercios es el coeficiente. Derivamos y a los tres medios.", i:0},
+    {t:"Tres medios menos uno es un medio. El coeficiente que baja es tres medios.", i:1},
+    {t:"La derivada respecto a y es tres medios por x a los dos tercios por y a la un medio.", i:2},
+  ],
+  26:[
+    {t:"Seno al cuadrado de x y. Doble cadena: la potencia cuadrada y el seno.", i:-1},
+    {t:"Identificamos f igual a u cuadrado, donde u es seno de x y.", i:0},
+    {t:"Respecto a x: primera cadena da dos seno de x y, por la derivada del seno.", i:1},
+    {t:"Segunda cadena: la derivada del seno de x y es coseno de x y, por la derivada interna.", i:2},
+    {t:"La derivada interna de x y respecto a x es y.", i:3},
+    {t:"Multiplicamos las tres piezas: dos seno, coseno, y y.", i:4},
+    {t:"Usamos la identidad: dos seno coseno del mismo argumento es seno del ángulo doble.", i:5},
+    {t:"La derivada respecto a x es y por seno de dos x y.", i:6},
+  ],
+  nary26:[
+    {t:"Respecto a y: exactamente el mismo proceso. La derivada interna de x y respecto a y es x.", i:0},
+    {t:"La derivada respecto a y es x por seno de dos x y.", i:1},
+  ],
+  27:[
+    {t:"Exponencial con cociente como argumento: e a la x sobre y.", i:-1},
+    {t:"Identificamos u igual a x sobre y.", i:0},
+    {t:"Respecto a x: la derivada de e a la u es e a la u por u prima. La derivada de x sobre y respecto a x: y es constante, da uno sobre y.", i:1},
+    {t:"La derivada interna es uno sobre y.", i:2},
+    {t:"La derivada respecto a x es e a la x sobre y, dividido entre y.", i:3},
+  ],
+  nary27:[
+    {t:"Respecto a y: la derivada de x sobre y respecto a y. X es constante, derivamos y a la menos uno.", i:0},
+    {t:"La derivada de y a la menos uno es menos y a la menos dos. Queda menos x sobre y cuadrado.", i:1},
+    {t:"La derivada respecto a y es menos x sobre y cuadrado, multiplicado por e a la x sobre y.", i:2},
+  ],
+  28:[
+    {t:"Producto con arcoseno: x por arcoseno de y sobre x. Uno de los más complejos.", i:-1},
+    {t:"Aplicamos la regla del producto: u igual a x, v igual a arcoseno de y sobre x.", i:0},
+    {t:"U prima es uno. Para v prima aplicamos la cadena: la derivada del arcoseno de u es uno sobre raíz de uno menos u cuadrado.", i:1},
+    {t:"La derivada interna de y sobre x respecto a x: y es constante, derivamos x a la menos uno, da menos y sobre x cuadrado.", i:2},
+    {t:"Simplificamos la raíz usando denominador común.", i:3},
+    {t:"Raíz de x cuadrado menos y cuadrado sobre x. La expresamos con x abajo.", i:4},
+    {t:"Calculamos v prima combinando los factores.", i:5},
+    {t:"Aplicamos la fórmula del producto: u prima v más u v prima.", i:6},
+    {t:"La derivada respecto a x es arcoseno de y sobre x, menos y sobre raíz de x cuadrado menos y cuadrado.", i:7},
+  ],
+  nary28:[
+    {t:"Respecto a y: x actúa como coeficiente constante afuera.", i:0},
+    {t:"Derivamos arcoseno de y sobre x respecto a y. La derivada interna de y sobre x respecto a y es uno sobre x.", i:1},
+    {t:"Simplificamos el denominador igual que antes.", i:2},
+    {t:"Multiplicamos por x afuera. Los x se cancelan.", i:3},
+    {t:"La derivada respecto a y es x sobre raíz de x cuadrado menos y cuadrado.", i:4},
+  ],
+  29:[
+    {t:"El ejercicio de mayor complejidad: logaritmo natural de x más raíz de x cuadrado más y cuadrado.", i:-1},
+    {t:"Llamamos u al argumento del logaritmo: x más la raíz.", i:0},
+    {t:"La derivada del logaritmo de u es uno sobre u, multiplicado por la derivada de u.", i:1},
+    {t:"La derivada de u respecto a x es uno, más la derivada de la raíz de x cuadrado más y cuadrado.", i:2},
+    {t:"La derivada de la raíz respecto a x: aplicamos la cadena, da x sobre la raíz.", i:3},
+    {t:"La derivada de u queda como raíz más x, todo sobre la raíz. Con denominador común.", i:4},
+    {t:"Multiplicamos uno sobre u por eso. El factor raíz más x aparece arriba y abajo. Se cancela.", i:5},
+    {t:"Resultado limpio: uno sobre raíz de x cuadrado más y cuadrado.", i:6},
+  ],
+  nary29:[
+    {t:"Respecto a y: la derivada de u. La derivada de x es cero. La derivada de la raíz respecto a y es y sobre la raíz.", i:0},
+    {t:"La derivada de u es y sobre la raíz.", i:1},
+    {t:"Multiplicamos uno sobre u por y sobre la raíz.", i:2},
+    {t:"La derivada respecto a y es y sobre la cantidad x más raíz, multiplicado por la raíz.", i:3},
+  ],
+};
+
+function buildNarration(ex){
+  const id = ex.id;
+  const linesX = NARRATION[id]        || [{t:'Calculamos la derivada respecto a x.', i:-1}];
+  const linesY = NARRATION['nary'+id] || [{t:'Calculamos la derivada respecto a y.', i:-1}];
+
+  const lines = [];
+  lines.push({t:'¡Hola! Soy Edwin Ríos, tu profe de Matemáticas Tres en la UDI.', i:-1});
+  lines.push({t:'Empecemos con la derivada parcial respecto a x. La y la tratamos como constante.', i:-1});
+  linesX.forEach(l => lines.push({t:l.t, i:l.i, side:'x'}));
+  lines.push({t:'Muy bien. Ahora la derivada respecto a y. Esta vez la x es la constante.', i:-1});
+  linesY.forEach(l => lines.push({t:l.t, i:l.i, side:'y'}));
+  lines.push({t:'¡Listo! Las dos derivadas parciales calculadas. Recuerda: cada una mide el cambio de la función en una sola dirección.', i:-2});
+  return lines;
+}
+
+function toggleVoice(){
+  if(speaking){ stopVoice(); return; }
+  startVoice();
+}
+
+function startVoice(){
+  if(!synth){ alert('Tu navegador no soporta síntesis de voz.'); return; }
+  const ex = EX[curId];
+  if(!ex) return;
+  pickVoice();
+  narLines = buildNarration(ex);
+  narIdx = 0;
+  speaking = true;
+  const btn = document.getElementById('voice-btn');
+  if(btn){ btn.classList.add('active'); btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="23" y2="15"/><line x1="20" y1="7" x2="20" y2="17"/></svg> Detener'; }
+  const prog = document.getElementById('voice-progress');
+  if(prog){
+    const stepsX = ex.desarrollo_x.length;
+    const stepsY = ex.desarrollo_y.length;
+    prog.innerHTML = Array.from({length:stepsX+stepsY},(_,i)=>'<div class="voice-dot" id="vdot-'+i+'"></div>').join('');
+  }
+  const av = document.getElementById('avatar-panel');
+  if(av){ av.classList.add('show','speaking'); }
+  speakNext();
+}
+
+function stopVoice(){
+  synth.cancel();
+  speaking = false;
+  if(mouthInterval){ clearInterval(mouthInterval); mouthInterval=null; }
+  const mouth = document.getElementById('avatar-mouth');
+  if(mouth) mouth.setAttribute('d','M33 53 Q40 57 47 53');
+  const btn = document.getElementById('voice-btn');
+  if(btn){ btn.classList.remove('active'); btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Escuchar explicación'; }
+  const av = document.getElementById('avatar-panel');
+  if(av){ av.classList.remove('speaking'); av.classList.remove('show'); }
+  const st = document.getElementById('voice-status');
+  if(st) st.textContent = 'Explicación detenida.';
+  document.querySelectorAll('.dev-line.narrating').forEach(e=>e.classList.remove('narrating'));
+}
+
+function speakNext(){
+  if(!speaking || narIdx >= narLines.length){ finishVoice(); return; }
+  const line = narLines[narIdx];
+  const idx  = line.i !== undefined ? line.i : -1;
+  const side = line.side;
+
+  /* Resaltar el paso correcto ANTES de hablar */
+  document.querySelectorAll('.dev-line.narrating').forEach(e=>e.classList.remove('narrating'));
+  document.querySelectorAll('.voice-dot').forEach(d=>d.classList.remove('active-dot'));
+  if(idx >= 0 && side){
+    const el = document.getElementById('step-'+side+'-'+idx);
+    if(el){ el.classList.add('narrating'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
+  }
+
+  const st = document.getElementById('voice-status');
+  if(st){
+    if(idx >= 0 && side==='x')  st.textContent = 'Derivada en x — paso '+(idx+1);
+    else if(idx >= 0 && side==='y') st.textContent = 'Derivada en y — paso '+(idx+1);
+    else st.textContent = idx===-2 ? 'Conclusión…' : 'Introducción…';
+  }
+
+  /* Corrección fonética: la "y" sola se pronuncia "i" en TTS, forzamos "ye" */
+  function fixPhonetics(txt){
+    return txt
+      .replace(/\bla y\b/g, 'la ye')
+      .replace(/\bla Y\b/g, 'la ye')
+      .replace(/\bde y\b/g, 'de ye')
+      .replace(/\ben y\b/g, 'en ye')
+      .replace(/\by es\b/g, 'ye es')
+      .replace(/\by en\b/g, 'ye en')
+      .replace(/\by el\b/g, 'ye el')
+      .replace(/\by la\b/g, 'ye la')
+      .replace(/\by al\b/g, 'ye al')
+      .replace(/\brespecto a y\b/gi, 'respecto a ye')
+      .replace(/\bde y\b/gi, 'de ye')
+      .replace(/\bde la y\b/gi, 'de la ye')
+      .replace(/\bla y es\b/gi, 'la ye es')
+      .replace(/\bla y\b/gi, 'la ye')
+      .replace(/\ba y\b/g, 'a ye')
+      .replace(/\ben y\b/g, 'en ye')
+      .replace(/\by\./g, 'ye.')
+      .replace(/\by,/g, 'ye,')
+      .replace(/\bUDI\b/g, 'údi');
+  }
+  const utter = new SpeechSynthesisUtterance(fixPhonetics(line.t || ''));
+  utter.lang   = 'es-CO';
+  utter.rate   = 0.88;
+  utter.pitch  = 0.95;
+  utter.volume = 1;
+  if(selectedVoice) utter.voice = selectedVoice;
+  utter.onstart = () => { startMouthAnim(); };
+  utter.onend   = () => { stopMouthAnim(); narIdx++; setTimeout(speakNext, 420); };
+  utter.onerror = () => { stopMouthAnim(); narIdx++; setTimeout(speakNext, 100); };
+  synth.speak(utter);
+  setTimeout(()=>{ if(synth.paused && speaking) synth.resume(); }, 500);
+}
+
+function startMouthAnim(){
+  if(mouthInterval) return;
+  const mouth = document.getElementById('avatar-mouth');
+  if(!mouth) return;
+  let open = false;
+  mouthInterval = setInterval(()=>{
+    open = !open;
+    mouth.setAttribute('d', open ? 'M33 52 Q40 61 47 52 Q40 56 33 52Z' : 'M33 53 Q40 58 47 53');
+  }, 160);
+}
+
+function stopMouthAnim(){
+  if(mouthInterval){ clearInterval(mouthInterval); mouthInterval=null; }
+  const mouth = document.getElementById('avatar-mouth');
+  if(mouth) mouth.setAttribute('d','M33 53 Q40 57 47 53');
+}
+
+function finishVoice(){
+  speaking = false;
+  stopMouthAnim();
+  const btn = document.getElementById('voice-btn');
+  if(btn){ btn.classList.remove('active'); btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Escuchar de nuevo'; }
+  const av = document.getElementById('avatar-panel');
+  if(av){ av.classList.remove('speaking'); setTimeout(()=>av.classList.remove('show'),2500); }
+  const st = document.getElementById('voice-status');
+  if(st) st.textContent = '✓ ¡Explicación completa!';
+  document.querySelectorAll('.dev-line.narrating').forEach(e=>e.classList.remove('narrating'));
+  document.querySelectorAll('.voice-dot').forEach(d=>d.classList.add('done-dot'));
+}
+
+if(speechSynthesis.onvoiceschanged !== undefined){
+  speechSynthesis.onvoiceschanged = pickVoice;
+}
+pickVoice();
+
+renderList();
+
+</script>
+</body>
+</html>
