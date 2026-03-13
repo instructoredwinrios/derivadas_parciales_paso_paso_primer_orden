@@ -88,11 +88,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--gray0);color:var(--dark);
 .dev-lines{display:flex;flex-direction:column;gap:0}
 .dev-line{display:flex;align-items:baseline;gap:0;border-bottom:1px dashed #E8E9F0;padding:10px 0}
 .dev-line:last-child{border-bottom:none}
-.line-annot{width:210px;flex-shrink:0;font-size:12px;color:var(--gray3);font-style:italic;padding-right:16px;line-height:1.4;padding-top:2px}
-.line-annot.result-annot{color:var(--green);font-style:normal;font-weight:600;font-size:13px}
+.line-annot{width:210px;flex-shrink:0;font-size:14px;color:var(--dark);font-style:italic;font-weight:500;padding-right:16px;line-height:1.4;padding-top:2px}
+.line-annot.result-annot{color:var(--green);font-style:normal;font-weight:700;font-size:15px}
 .line-formula{flex:1;font-family:'IBM Plex Mono',monospace;font-size:18px;color:var(--dark);line-height:1.6}
 .line-formula.highlight{color:var(--green);font-weight:600;font-size:21px}
-.why-box{margin:4px 0 8px 210px;background:var(--gray0);border-left:3px solid var(--gray2);border-radius:0 6px 6px 0;padding:8px 14px;font-size:13px;color:var(--gray4);line-height:1.5}
+.why-box{margin:4px 0 8px 210px;background:var(--lblue);border-left:3px solid var(--blue);border-radius:0 6px 6px 0;padding:8px 14px;font-size:14px;color:var(--dblue);line-height:1.5;font-weight:500}
 .why-box.why-warn{background:var(--lred);border-left-color:var(--red);color:var(--red);font-weight:500}
 .why-box.why-tip{background:var(--lpurple);border-left-color:var(--purple);color:var(--purple)}
 .resultado-final{background:var(--lgreen);border:2px solid #A8D8A8;border-radius:var(--radius);padding:20px 28px;margin-bottom:20px}
@@ -168,7 +168,7 @@ sub{font-size:.65em;vertical-align:sub;line-height:0}
   .voice-status{width:100%;order:3;font-size:12px}
   .voice-progress{order:4;width:100%}
   .sol-scroll{padding:16px}
-  .line-annot{width:150px;font-size:11px}
+  .line-annot{width:150px;font-size:13px}
   .line-formula{font-size:16px}
   .why-box{margin-left:150px}
   .main-footer{padding:12px 16px}
@@ -734,7 +734,7 @@ const EX = [
       {annot:'Reescribir', eq:'f  =  (x²+y²)^(1/2)  ,   u = x²+y²'},
       {annot:'Derivada exterior', eq:'∂f/∂x  =  (1/2)(x²+y²)^(−1/2) · ∂u/∂x'},
       {annot:'Calcular ∂u/∂x', eq:'∂/∂x(x²+y²)  =  2x'},
-      {annot:'Sustituir', eq:'(1/2) · (1/√(x²+y²)) · 2x'},
+      {annot:'Sustituir', eq:'(1 · 2x) / (2·√(x²+y²))'},
       {annot:'Simplificar', eq:'x / √(x²+y²)'},
       {annot:'∴  ∂f/∂x', eq:'x / √(x²+y²)', result:true},
     ],
@@ -742,7 +742,7 @@ const EX = [
       {annot:'Reescribir', eq:'f  =  (x²+y²)^(1/2)  ,   u = x²+y²'},
       {annot:'Derivada exterior', eq:'∂f/∂y  =  (1/2)(x²+y²)^(−1/2) · ∂u/∂y'},
       {annot:'Calcular ∂u/∂y', eq:'∂/∂y(x²+y²)  =  2y'},
-      {annot:'Sustituir', eq:'(1/2) · (1/√(x²+y²)) · 2y'},
+      {annot:'Sustituir', eq:'(1 · 2y) / (2·√(x²+y²))'},
       {annot:'Simplificar', eq:'y / √(x²+y²)'},
       {annot:'∴  ∂f/∂y', eq:'y / √(x²+y²)', result:true},
     ],
@@ -981,17 +981,17 @@ const EX = [
     teoria:'∂/∂u[arctan(u)] = 1/(1+u²). Con u = y/x, ∂u/∂x = −y/x² y ∂u/∂y = 1/x.',
     desarrollo_x:[
       {annot:'u = y/x', eq:'∂f/∂x  =  (1/(1+u²)) · ∂u/∂x'},
-      {annot:'1 + u²', eq:'1 + (y/x)²  =  (x²+y²)/x²'},
+      {annot:'1 + u²', eq:'1 + y²/x²  =  (x²+y²)/x²'},
       {annot:'Calcular ∂u/∂x', eq:'∂u/∂x  =  −y/x²'},
-      {annot:'Sustituir', eq:'(x²/(x²+y²)) · (−y/x²)'},
+      {annot:'Sustituir', eq:'[x²/(x²+y²)] · [−y/x²]'},
       {annot:'Simplificar', eq:'−y / (x²+y²)'},
       {annot:'∴  ∂f/∂x', eq:'−y / (x²+y²)', result:true},
     ],
     desarrollo_y:[
       {annot:'u = y/x', eq:'∂/∂y[arctan(u)] = 1/(1+u²) · ∂u/∂y'},
-      {annot:'1 + u²', eq:'1 + (y/x)²  =  (x²+y²)/x²'},
+      {annot:'1 + u²', eq:'1 + y²/x²  =  (x²+y²)/x²'},
       {annot:'Calcular ∂u/∂y', eq:'∂u/∂y  =  1/x'},
-      {annot:'Sustituir', eq:'(x²/(x²+y²)) · (1/x)'},
+      {annot:'Sustituir', eq:'[x²/(x²+y²)] · [1/x]'},
       {annot:'Simplificar', eq:'x / (x²+y²)'},
       {annot:'∴  ∂f/∂y', eq:'x / (x²+y²)', result:true},
     ],
@@ -1080,13 +1080,13 @@ const EX = [
     desarrollo_x:[
       {annot:'u = x²+y²', eq:'∂f/∂x  =  (1/u) · ∂u/∂x'},
       {annot:'Calcular ∂u/∂x', eq:'∂u/∂x  =  2x'},
-      {annot:'Sustituir', eq:'(1/(x²+y²)) · 2x'},
+      {annot:'Sustituir', eq:'2x / (x²+y²)'},
       {annot:'∴  ∂f/∂x', eq:'2x / (x²+y²)', result:true},
     ],
     desarrollo_y:[
       {annot:'u = x²+y²', eq:'∂f/∂y  =  (1/u) · ∂u/∂y'},
       {annot:'Calcular ∂u/∂y', eq:'∂u/∂y  =  2y'},
-      {annot:'Sustituir', eq:'(1/(x²+y²)) · 2y'},
+      {annot:'Sustituir', eq:'2y / (x²+y²)'},
       {annot:'∴  ∂f/∂y', eq:'2y / (x²+y²)', result:true},
     ],
     res_x:'2x/(x²+y²)', res_y:'2y/(x²+y²)',
@@ -1363,15 +1363,45 @@ function renderList(){
 
 /* ── RENDER VISUAL (pow + frac) ── */
 function frac(n,d){return `<span class="vfrac"><span class="vfrac-n">${n}</span><span class="vfrac-d">${d}</span></span>`;}
+
+const SUPMAP = {'²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁰':'0','¹':'1','⁻':'−','⁺':'+','ⁿ':'n'};
+function toSup(c){ return SUPMAP[c]||c; }
+
 function pow(s){
-  if(typeof s!=='string')return '';
-  s=s.replace(/\^(\([^)]+\))/g,(m,inner)=>`<sup>${inner.slice(1,-1)}</sup>`);
-  s=s.replace(/\^(-?[\d]+)/g,(m,n)=>`<sup>${n}</sup>`);
-  s=s.replace(/\(([^()\/]+)\)\s*\/\s*\(([^()\/]+)\)/g,(m,n,d)=>frac(n.trim(),d.trim()));
-  s=s.replace(/((?:[−]?[\d]*[a-zA-Zπ()·⁰¹²³⁴⁵⁶⁷⁸⁹]*(?:<sup>[^<]*<\/sup>)*)+)\s*\/\s*\(([^()]+)\)/g,(m,n,d)=>n.trim()?frac(n.trim(),d.trim()):m);
-  s=s.replace(/\(([^()\/]+)\)\s*\/\s*((?:[−]?[\d]*[a-zA-Zπ·⁰¹²³⁴⁵⁶⁷⁸⁹]*(?:<sup>[^<]*<\/sup>)*)+)/g,(m,n,d)=>d.trim()?frac(n.trim(),d.trim()):m);
-  const fracRe=/((?:[−]?[\d]*[a-zA-Zπ·⁰¹²³⁴⁵⁶⁷⁸⁹]*(?:<sup>[^<]*<\/sup>)*)+)\s*\/\s*((?:[−]?[\d]*[a-zA-Zπ·⁰¹²³⁴⁵⁶⁷⁸⁹]*(?:<sup>[^<]*<\/sup>)*)+)/g;
-  s=s.replace(fracRe,(m,n,d)=>(!n.trim()||!d.trim())?m:frac(n.trim(),d.trim()));
+  if(typeof s !== 'string') return '';
+
+  /* 0. Corchetes [] → paréntesis normales para agrupación sin fracción anidada */
+  s = s.replace(/\[([^\[\]]+)\]/g, (m, inner) => `(${inner})`);
+
+  /* 1. ^(expr) → superíndice */
+  s = s.replace(/\^\(([^)]+)\)/g, (m,e) => `<sup>${e}</sup>`);
+  /* 2. ^n → superíndice */
+  s = s.replace(/\^(-?[\d]+)/g, (m,n) => `<sup>${n}</sup>`);
+  /* 3. (grupo)ⁿ → (grupo)<sup>n</sup>  ANTES de fracciones */
+  s = s.replace(/(\([^()]+\))([²³⁴⁵⁶⁷⁸⁹])/g, (m, grp, exp) => `${grp}<sup>${toSup(exp)}</sup>`);
+  /* 4. Carácter Unicode superíndice suelto */
+  s = s.replace(/([a-zA-Z0-9])([²³⁴⁵⁶⁷⁸⁹])/g, (m, base, exp) => `${base}<sup>${toSup(exp)}</sup>`);
+  s = s.replace(/([²³⁴⁵⁶⁷⁸⁹])/g, (m, exp) => `<sup>${toSup(exp)}</sup>`);
+
+  /* 5. Proteger contenido de <sup>…</sup> con placeholders antes de fracciones */
+  const sups = [];
+  s = s.replace(/<sup>(.*?)<\/sup>/g, (m, inner) => {
+    sups.push(inner);
+    return `\x00SUP${sups.length-1}\x00`;
+  });
+
+  /* 6. Fracciones — con denominador protegido */
+  s = s.replace(/\(([^()\/]+)\)\s*\/\s*\(([^()\/]+)\)/g, (m,n,d) => frac(n.trim(), d.trim()));
+  s = s.replace(/((?:[−]?[\d]*[a-zA-Zπ()·]*(?:\x00SUP\d+\x00)*)+)\s*\/\s*\(([^()]+)\)(?!\x00SUP)/g,
+    (m,n,d) => n.trim() ? frac(n.trim(), d.trim()) : m);
+  s = s.replace(/\(([^()\/]+)\)\s*\/\s*((?:[−]?[\d]*[a-zA-Zπ·]*(?:\x00SUP\d+\x00)*)+)/g,
+    (m,n,d) => d.trim() ? frac(n.trim(), d.trim()) : m);
+  const fracRe = /((?:[−]?[\d]*[a-zA-Zπ·]*(?:\x00SUP\d+\x00)*)+)\s*\/\s*((?:[−]?[\d]*[a-zA-Zπ·]*(?:\x00SUP\d+\x00)*)+)/g;
+  s = s.replace(fracRe, (m,n,d) => (!n.trim()||!d.trim()) ? m : frac(n.trim(), d.trim()));
+
+  /* 7. Restaurar placeholders */
+  s = s.replace(/\x00SUP(\d+)\x00/g, (m, i) => `<sup>${sups[+i]}</sup>`);
+
   return s;
 }
 
@@ -1589,393 +1619,488 @@ function ensureVoices(cb){
 
 ensureVoices();
 
-/* ── Guiones pedagógicos escritos a mano, igual que en Integrales ── */
+/* ── Guiones pedagógicos — índices sincronizados paso a paso ── */
+let greetingDone = false;
+
 const NARRATION = {
+  /* ── id:0  f = 3x + 5y ── */
   0:[
-    {t:"¡Hola! Soy Edwin Ríos, tu profe de Matemáticas Tres en la UDI. Vamos con el primer ejercicio.", i:-1},
-    {t:"Tenemos f de x, y igual a tres x más cinco y. La derivada respecto a x trata la y como constante.", i:0},
-    {t:"Tres x derivado da tres. Y cinco y, al ser constante respecto a x, su derivada es cero.", i:1},
-    {t:"Sumamos tres más cero.", i:2},
-    {t:"La derivada parcial respecto a x es tres.", i:3},
+    {t:"Aquí tenemos la función completa. Identificamos qué depende de x y qué no.", i:0},
+    {t:"Derivamos respecto a x. El término cinco ye es completamente constante: su derivada es cero. El término tres x nos da tres.", i:1},
+    {t:"Juntamos los resultados: tres más cero.", i:2},
+    {t:"La derivada parcial respecto a x es tres. Una función lineal siempre tiene derivada constante.", i:3},
   ],
   nary0:[
-    {t:"Ahora respecto a y. Esta vez la x es la constante.", i:0},
-    {t:"Tres x da cero porque no tiene y. Y cinco y derivado da cinco.", i:1},
-    {t:"La derivada parcial respecto a y es cinco.", i:2},
+    {t:"Misma función pero ahora derivamos respecto a ye. Tres x es la constante ahora.", i:0},
+    {t:"Derivamos: tres x da cero. Cinco ye da cinco.", i:1},
+    {t:"Sumamos: cero más cinco.", i:2},
+    {t:"La derivada parcial respecto a ye es cinco.", i:3},
   ],
+
+  /* ── id:1  f = x² + y² ── */
   1:[
-    {t:"Segundo ejercicio: x cuadrado más ye cuadrado. Función muy clásica.", i:-1},
-    {t:"Respecto a x: ye cuadrado es constante, da cero.", i:0},
-    {t:"La derivada de x cuadrado es dos x.", i:1},
+    {t:"Suma de cuadrados. Vemos la función completa.", i:0},
+    {t:"Respecto a x: ye cuadrado es constante, da cero. Derivamos x cuadrado con la regla de la potencia: queda dos x.", i:1},
+    {t:"La derivada parcial respecto a x es dos x.", i:2},
   ],
   nary1:[
-    {t:"Respecto a y: x cuadrado es constante, da cero.", i:0},
-    {t:"La derivada de ye cuadrado es dos y.", i:1},
+    {t:"Misma función. Ahora x cuadrado es la constante.", i:0},
+    {t:"Derivamos ye cuadrado: queda dos ye.", i:1},
+    {t:"La derivada parcial respecto a ye es dos ye.", i:2},
   ],
+
+  /* ── id:2  f = 4x³ − 2y² + 7 ── */
   2:[
-    {t:"Polinomio con tres términos: cuatro x al cubo, menos dos ye cuadrado, más siete.", i:-1},
-    {t:"Respecto a x: solo derivamos los términos con x. Dos ye cuadrado da cero. El siete también.", i:0},
-    {t:"Cuatro x al cubo derivado es doce x al cuadrado. Bajamos el tres y multiplicamos por cuatro.", i:1},
+    {t:"Polinomio de tres términos. Lo identificamos completamente.", i:0},
+    {t:"Derivamos término a término. Solo cuatro x al cubo tiene x. Queda doce x cuadrado. Los otros dos términos dan cero.", i:1},
+    {t:"La derivada parcial respecto a x es doce x cuadrado.", i:2},
   ],
   nary2:[
-    {t:"Respecto a y: cuatro x al cubo es constante, da cero. Derivamos dos ye cuadrado.", i:0},
-    {t:"La derivada de dos ye cuadrado es cuatro y. El siete sigue dando cero.", i:1},
+    {t:"Ahora derivamos respecto a ye.", i:0},
+    {t:"Cuatro x al cubo da cero. Menos dos ye cuadrado da menos cuatro ye. El siete da cero.", i:1},
+    {t:"La derivada parcial respecto a ye es menos cuatro ye.", i:2},
   ],
+
+  /* ── id:3  f = x²y + xy² ── */
   3:[
-    {t:"Función con términos mixtos: x cuadrado y más x ye cuadrado. Dos términos con ambas variables.", i:-1},
-    {t:"Respecto a x: en x cuadrado y, la y actúa como coeficiente. Derivamos x cuadrado y obtenemos dos x ye.", i:0},
-    {t:"En x ye cuadrado, ye cuadrado es el coeficiente. Derivamos x y obtenemos ye cuadrado.", i:1},
-    {t:"Sumamos los dos resultados.", i:2},
-    {t:"La derivada respecto a x es dos x y más ye cuadrado.", i:3},
+    {t:"Función con dos términos mixtos. Ambos tienen x y ye.", i:0},
+    {t:"En x cuadrado ye, la ye actúa como coeficiente constante. Derivamos x cuadrado: resultado dos x ye.", i:1},
+    {t:"En x ye cuadrado, ye cuadrado es el coeficiente. Derivamos x: resultado ye cuadrado.", i:2},
+    {t:"Sumamos los dos resultados parciales.", i:3},
+    {t:"La derivada parcial respecto a x es dos x ye más ye cuadrado.", i:4},
   ],
   nary3:[
-    {t:"Respecto a y: en x cuadrado y, x cuadrado es el coeficiente. Derivamos y y obtenemos x cuadrado.", i:0},
-    {t:"En x ye cuadrado, x es el coeficiente. Derivamos ye cuadrado y obtenemos dos x ye.", i:1},
-    {t:"Sumamos los resultados.", i:2},
-    {t:"La derivada respecto a y es x cuadrado más dos x ye.", i:3},
+    {t:"Misma función. Derivamos respecto a ye.", i:0},
+    {t:"En x cuadrado ye, x cuadrado es el coeficiente. Derivamos ye: resultado x cuadrado.", i:1},
+    {t:"En x ye cuadrado, x es el coeficiente. Derivamos ye cuadrado: resultado dos x ye.", i:2},
+    {t:"Sumamos.", i:3},
+    {t:"La derivada parcial respecto a ye es x cuadrado más dos x ye.", i:4},
   ],
+
+  /* ── id:4  f = 3x²y³ − 5x + 2y ── */
   4:[
-    {t:"Función exponencial: e elevado a x más y. Usamos la regla de la cadena.", i:-1},
-    {t:"La derivada de e a la u es e a la u por u prima. La derivada de x más y respecto a x es uno.", i:0},
-    {t:"Multiplicamos e a la x más y por uno.", i:1},
-    {t:"La derivada respecto a x es e a la x más y.", i:2},
+    {t:"Tres términos. El primero tiene ambas variables. Los otros dos son simples.", i:0},
+    {t:"En tres x cuadrado ye al cubo, ye al cubo es coeficiente. Derivamos x cuadrado: resultado seis x ye al cubo.", i:1},
+    {t:"Menos cinco x da directamente menos cinco.", i:2},
+    {t:"Dos ye no tiene x. Da cero.", i:3},
+    {t:"La derivada parcial respecto a x es seis x ye al cubo menos cinco.", i:4},
   ],
   nary4:[
-    {t:"Respecto a y: la derivada de x más y respecto a y también es uno.", i:0},
-    {t:"La derivada respecto a y también es e a la x más y. Tiene sentido por simetría.", i:1},
+    {t:"Misma función. Derivamos respecto a ye.", i:0},
+    {t:"En tres x cuadrado ye al cubo, x cuadrado es coeficiente. Derivamos ye al cubo: resultado nueve x cuadrado ye cuadrado.", i:1},
+    {t:"Menos cinco x no tiene ye. Da cero.", i:2},
+    {t:"Dos ye da dos.", i:3},
+    {t:"La derivada parcial respecto a ye es nueve x cuadrado ye cuadrado más dos.", i:4},
   ],
+
+  /* ── id:5  f = x³ + 3x²y − y³ + 4 ── */
   5:[
-    {t:"Seno de x más coseno de ye. Dos funciones trigonométricas básicas.", i:-1},
-    {t:"Respecto a x: coseno de y es constante, da cero. Derivamos seno de x.", i:0},
-    {t:"La derivada del seno es el coseno. Queda coseno de x.", i:1},
-    {t:"La derivada respecto a x es coseno de x.", i:2},
+    {t:"Cuatro términos. Derivamos respecto a x término a término.", i:0},
+    {t:"x al cubo da tres x cuadrado.", i:1},
+    {t:"En tres x cuadrado ye, ye es coeficiente. Derivamos x cuadrado: resultado seis x ye.", i:2},
+    {t:"Menos ye al cubo y el cuatro son constantes respecto a x. Ambos dan cero.", i:3},
+    {t:"La derivada parcial respecto a x es tres x cuadrado más seis x ye.", i:4},
   ],
   nary5:[
-    {t:"Respecto a y: seno de x es constante, da cero. Derivamos coseno de ye.", i:0},
-    {t:"La derivada del coseno es menos el seno. Queda menos seno de ye.", i:1},
-    {t:"La derivada respecto a y es menos seno de ye.", i:2},
+    {t:"Misma función. Derivamos respecto a ye.", i:0},
+    {t:"x al cubo da cero. El cuatro da cero. Ambos son constantes respecto a ye.", i:1},
+    {t:"En tres x cuadrado ye, x cuadrado es coeficiente. Derivamos ye: resultado tres x cuadrado.", i:2},
+    {t:"Menos ye al cubo da menos tres ye cuadrado.", i:3},
+    {t:"La derivada parcial respecto a ye es tres x cuadrado menos tres ye cuadrado.", i:4},
   ],
+
+  /* ── id:6  f = 2x⁴ − 3x²y² + y⁴ ── */
   6:[
-    {t:"Dos exponenciales: e a la dos x más e a la tres y.", i:-1},
-    {t:"Respecto a x: e a la tres y es constante. Derivamos e a la dos x con la cadena.", i:0},
-    {t:"La derivada interna de dos x es dos. Queda dos por e a la dos x.", i:1},
-    {t:"La derivada respecto a x es dos e a la dos x.", i:2},
+    {t:"Tres términos. Aplicamos linealidad.", i:0},
+    {t:"Dos x a la cuarta da ocho x al cubo.", i:1},
+    {t:"En menos tres x cuadrado ye cuadrado, ye cuadrado es coeficiente. Derivamos x cuadrado: resultado menos seis x ye cuadrado.", i:2},
+    {t:"Ye a la cuarta es constante respecto a x. Da cero.", i:3},
+    {t:"La derivada parcial respecto a x es ocho x al cubo menos seis x ye cuadrado.", i:4},
   ],
   nary6:[
-    {t:"Respecto a y: e a la dos x es constante. Derivamos e a la tres y.", i:0},
-    {t:"La derivada interna de tres y es tres. Queda tres por e a la tres y.", i:1},
-    {t:"La derivada respecto a y es tres e a la tres y.", i:2},
+    {t:"Derivamos respecto a ye.", i:0},
+    {t:"Dos x a la cuarta no tiene ye. Da cero.", i:1},
+    {t:"En menos tres x cuadrado ye cuadrado, x cuadrado es coeficiente. Derivamos ye cuadrado: resultado menos seis x cuadrado ye.", i:2},
+    {t:"Ye a la cuarta da cuatro ye al cubo.", i:3},
+    {t:"La derivada parcial respecto a ye es menos seis x cuadrado ye más cuatro ye al cubo.", i:4},
   ],
+
+  /* ── id:7  f = (x+y)(x−y) ── */
   7:[
-    {t:"Logaritmo natural de x cuadrado más ye cuadrado. Cadena con el logaritmo.", i:-1},
-    {t:"La derivada de logaritmo de u es uno sobre u, por la derivada interna.", i:0},
-    {t:"La derivada interna de x cuadrado más ye cuadrado respecto a x es dos x.", i:1},
-    {t:"Queda dos x sobre x cuadrado más ye cuadrado.", i:2},
-    {t:"La derivada respecto a x es dos x sobre x cuadrado más ye cuadrado.", i:3},
+    {t:"Producto de factores conjugados. La estrategia más eficiente es expandir con la identidad notable.", i:0},
+    {t:"x cuadrado se identifica. Derivamos x cuadrado: resultado dos x.", i:1},
+    {t:"Menos ye cuadrado no tiene x. Da cero.", i:2},
+    {t:"La derivada parcial respecto a x es dos x.", i:3},
   ],
   nary7:[
-    {t:"Respecto a y: la derivada interna es dos y.", i:0},
-    {t:"Queda dos y sobre x cuadrado más ye cuadrado.", i:1},
-    {t:"Nota la simetría perfecta entre las dos derivadas.", i:2},
+    {t:"Trabajamos con la forma expandida: x cuadrado menos ye cuadrado.", i:0},
+    {t:"x cuadrado no tiene ye. Da cero.", i:1},
+    {t:"Menos ye cuadrado da menos dos ye.", i:2},
+    {t:"La derivada parcial respecto a ye es menos dos ye.", i:3},
   ],
+
+  /* ── id:8  f = x² · y³ ── */
   8:[
-    {t:"Producto de funciones separadas: e a la x por seno de ye.", i:-1},
-    {t:"Respecto a x: seno de y es constante y actúa como coeficiente. Derivamos e a la x.", i:0},
-    {t:"La derivada de e a la x es e a la x. El coeficiente seno de y se mantiene.", i:1},
-    {t:"La derivada respecto a x es e a la x por seno de ye.", i:2},
+    {t:"Las variables están completamente separadas. Eso simplifica mucho.", i:0},
+    {t:"Respecto a x: ye al cubo es coeficiente constante. Derivamos x cuadrado: resultado dos x ye al cubo.", i:1},
+    {t:"La derivada parcial respecto a x es dos x ye al cubo.", i:2},
   ],
   nary8:[
-    {t:"Respecto a y: e a la x es el coeficiente. Derivamos seno de ye.", i:0},
-    {t:"La derivada del seno es el coseno. El coeficiente e a la x se mantiene.", i:1},
-    {t:"La derivada respecto a y es e a la x por coseno de ye.", i:2},
+    {t:"Derivamos respecto a ye. Ahora x cuadrado es el coeficiente constante.", i:0},
+    {t:"Derivamos ye al cubo: resultado tres x cuadrado ye cuadrado.", i:1},
+    {t:"La derivada parcial respecto a ye es tres x cuadrado ye cuadrado.", i:2},
   ],
+
+  /* ── id:9  f = (2x+3y²)(x²−y) ── */
   9:[
-    {t:"Función racional: x y sobre x más y. Aplicamos la regla del cociente.", i:-1},
-    {t:"Numerador u igual a x ye, denominador v igual a x más y.", i:0},
-    {t:"Respecto a x: la derivada de u es y. La derivada de v es uno.", i:1},
-    {t:"Aplicamos la fórmula: u prima v menos u v prima, entre v cuadrado.", i:2},
-    {t:"Sustituimos: y por la suma, menos x y por uno.", i:3},
-    {t:"Expandimos: x y más ye cuadrado menos x ye. Los x y se cancelan.", i:4},
-    {t:"La derivada respecto a x es ye cuadrado sobre la suma al cuadrado.", i:5},
+    {t:"Identificamos u y v para aplicar la regla del producto.", i:0},
+    {t:"Calculamos u prima respecto a x: dos.", i:1},
+    {t:"Calculamos v prima respecto a x: dos x.", i:2},
+    {t:"Aplicamos la fórmula u prima v más u v prima.", i:3},
+    {t:"Expandimos todos los productos.", i:4},
+    {t:"La derivada parcial respecto a x es seis x cuadrado más seis x ye cuadrado menos dos ye.", i:5},
   ],
   nary9:[
-    {t:"Respecto a y: la derivada de u es x. La derivada de v es uno.", i:0},
-    {t:"Aplicamos la fórmula: x por la suma, menos x y por uno.", i:1},
-    {t:"Expandimos y los x y se cancelan.", i:2},
-    {t:"La derivada respecto a y es x cuadrado sobre la suma al cuadrado.", i:3},
+    {t:"Mismos u y v. Derivamos respecto a ye.", i:0},
+    {t:"u prima respecto a ye: seis ye.", i:1},
+    {t:"v prima respecto a ye: menos uno.", i:2},
+    {t:"Aplicamos u prima v más u v prima y expandimos.", i:3},
+    {t:"Agrupamos términos semejantes.", i:4},
+    {t:"La derivada parcial respecto a ye es seis x cuadrado ye menos nueve ye cuadrado menos dos x.", i:5},
   ],
+
+  /* ── id:10  f = (x+y)⁵ ── */
   10:[
-    {t:"Seno del producto x ye. Regla de la cadena sobre el argumento compuesto.", i:-1},
-    {t:"El argumento del seno es u igual a x ye.", i:0},
-    {t:"Respecto a x: derivada exterior es coseno de x ye. La derivada interna de x y respecto a x es y.", i:1},
-    {t:"Multiplicamos las dos piezas.", i:2},
-    {t:"La derivada respecto a x es y por coseno de x ye.", i:3},
+    {t:"Identificamos la estructura: función exterior potencia quinta, función interior la suma.", i:0},
+    {t:"Aplicamos la cadena. Derivada exterior: cinco u a la cuarta.", i:1},
+    {t:"Derivada interior de x más ye respecto a x: uno.", i:2},
+    {t:"Sustituimos u por la suma original.", i:3},
+    {t:"La derivada parcial respecto a x es cinco por la suma a la cuarta.", i:4},
   ],
   nary10:[
-    {t:"Respecto a y: misma cadena. La derivada interna de x y respecto a y es x.", i:0},
-    {t:"La derivada respecto a y es x por coseno de x ye.", i:1},
+    {t:"Misma estructura para ye.", i:0},
+    {t:"Aplicamos la cadena. Derivada exterior: cinco u a la cuarta.", i:1},
+    {t:"Derivada interior de x más ye respecto a ye: también uno.", i:2},
+    {t:"Sustituimos u.", i:3},
+    {t:"La derivada parcial respecto a ye es idéntica: cinco por la suma a la cuarta.", i:4},
   ],
+
+  /* ── id:11  f = (3x²−2y)⁴ ── */
   11:[
-    {t:"Exponencial con producto en el exponente: e a la x ye. Cadena.", i:-1},
-    {t:"El argumento es u igual a x ye.", i:0},
-    {t:"Respecto a x: la derivada de e a la u es e a la u por la derivada interna. La derivada de x y respecto a x es y.", i:1},
-    {t:"La derivada respecto a x es y por e a la x ye.", i:2},
+    {t:"Identificamos u igual a tres x cuadrado menos dos ye.", i:0},
+    {t:"Aplicamos la cadena. Derivada exterior: cuatro u al cubo.", i:1},
+    {t:"Derivada interior de u respecto a x: tres x cuadrado da seis x. El término dos ye da cero.", i:2},
+    {t:"Sustituimos u y multiplicamos.", i:3},
+    {t:"La derivada parcial respecto a x es veinticuatro x por la cantidad al cubo.", i:4},
   ],
   nary11:[
-    {t:"Respecto a y: la derivada interna de x y respecto a y es x.", i:0},
-    {t:"La derivada respecto a y es x por e a la x ye.", i:1},
+    {t:"Mismo u. Derivamos respecto a ye.", i:0},
+    {t:"Derivada exterior: cuatro u al cubo.", i:1},
+    {t:"Derivada interior de u respecto a ye: tres x cuadrado da cero. Menos dos ye da menos dos.", i:2},
+    {t:"Sustituimos u y multiplicamos: cuatro u al cubo por menos dos.", i:3},
+    {t:"La derivada parcial respecto a ye es menos ocho por la cantidad al cubo.", i:4},
   ],
+
+  /* ── id:12  f = √(x²+y²) ── */
   12:[
-    {t:"Arcotangente de y sobre x. Cadena con función inversa trigonométrica.", i:-1},
-    {t:"La derivada de arcotangente de u es uno sobre uno más u cuadrado, por la derivada interna.", i:0},
-    {t:"Respecto a x: la derivada interna de y sobre x es menos y sobre x cuadrado.", i:1},
-    {t:"Calculamos uno más ye cuadrado sobre x cuadrado con denominador común.", i:2},
-    {t:"Uno más ye cuadrado sobre x cuadrado nos da x cuadrado más ye cuadrado, sobre x cuadrado.", i:3},
-    {t:"El recíproco es x cuadrado sobre la suma. Multiplicamos por menos y sobre x cuadrado.", i:4},
-    {t:"La derivada respecto a x es menos y sobre x cuadrado más ye cuadrado.", i:5},
+    {t:"Reescribimos la raíz como potencia un medio. Identificamos u igual a x cuadrado más ye cuadrado.", i:0},
+    {t:"Aplicamos la cadena. Derivada exterior: un medio por la expresión a la menos un medio.", i:1},
+    {t:"Derivada interior de u respecto a x: dos x.", i:2},
+    {t:"Sustituimos: un medio por dos x sobre la raíz.", i:3},
+    {t:"Los dos se cancelan con el denominador dos.", i:4},
+    {t:"La derivada parcial respecto a x es x sobre la raíz.", i:5},
   ],
   nary12:[
-    {t:"Respecto a y: la derivada interna de y sobre x respecto a y es uno sobre x.", i:0},
-    {t:"Multiplicamos el recíproco por uno sobre x.", i:1},
-    {t:"La derivada respecto a y es x sobre x cuadrado más ye cuadrado.", i:2},
+    {t:"Misma estrategia para ye. Reescribimos igual.", i:0},
+    {t:"Derivada exterior: un medio por la expresión a la menos un medio.", i:1},
+    {t:"Derivada interior de u respecto a ye: dos ye.", i:2},
+    {t:"Sustituimos: un medio por dos ye sobre la raíz.", i:3},
+    {t:"Los dos se cancelan igual que antes.", i:4},
+    {t:"La derivada parcial respecto a ye es ye sobre la raíz.", i:5},
   ],
+
+  /* ── id:13  f = x²·eˣʸ ── */
   13:[
-    {t:"Potencia con producto de variables: x cuadrado por ye al cubo.", i:-1},
-    {t:"Respecto a x: ye al cubo actúa como coeficiente. Derivamos x cuadrado.", i:0},
-    {t:"La derivada de x cuadrado es dos x. Multiplicamos por ye al cubo.", i:1},
-    {t:"La derivada respecto a x es dos x ye al cubo.", i:2},
+    {t:"Producto de dos funciones. Identificamos u y v para la regla del producto.", i:0},
+    {t:"Calculamos u prima: dos x. Para v prima necesitamos la cadena sobre la exponencial.", i:1},
+    {t:"v prima: la derivada de e a la x ye es e a la x ye por ye, que es la derivada interior de x ye respecto a x.", i:2},
+    {t:"Aplicamos u prima v más u v prima. Obtenemos dos x e a la x ye más x cuadrado ye e a la x ye.", i:3},
+    {t:"Factorizamos x e a la x ye, que aparece en ambos términos.", i:4},
+    {t:"La derivada parcial respecto a x es x e a la x ye por la cantidad dos más x ye.", i:5},
   ],
   nary13:[
-    {t:"Respecto a y: x cuadrado actúa como coeficiente. Derivamos ye al cubo.", i:0},
-    {t:"La derivada de ye al cubo es tres ye cuadrado. Multiplicamos por x cuadrado.", i:1},
-    {t:"La derivada respecto a y es tres x cuadrado ye cuadrado.", i:2},
+    {t:"Respecto a ye, x cuadrado actúa como coeficiente constante.", i:0},
+    {t:"Solo derivamos e a la x ye. Por la cadena, la derivada interior de x ye respecto a ye es x.", i:1},
+    {t:"La derivada parcial respecto a ye es x al cubo por e a la x ye.", i:2},
   ],
+
+  /* ── id:14  f = ln(x²y) ── */
   14:[
-    {t:"Potencia de suma: x más y, todo a la cuarta. Cadena.", i:-1},
-    {t:"Identificamos u igual a x más y.", i:0},
-    {t:"Respecto a x: derivada exterior es cuatro u al cubo. La derivada interna de x más y respecto a x es uno.", i:1},
-    {t:"Sustituimos u.", i:2},
-    {t:"La derivada respecto a x es cuatro por la suma al cubo.", i:3},
+    {t:"Usamos propiedades del logaritmo antes de derivar. Logaritmo de x cuadrado ye se separa en logaritmo de x cuadrado más logaritmo de ye.", i:0},
+    {t:"Derivamos dos logaritmo de x respecto a x: resultado dos sobre x.", i:1},
+    {t:"Logaritmo de ye no tiene x. Da cero.", i:2},
+    {t:"La derivada parcial respecto a x es dos sobre x.", i:3},
   ],
   nary14:[
-    {t:"Respecto a y: la derivada interna también es uno.", i:0},
-    {t:"La derivada respecto a y también es cuatro por la suma al cubo. Simetría perfecta.", i:1},
+    {t:"Misma expansión del logaritmo.", i:0},
+    {t:"Dos logaritmo de x no tiene ye. Da cero.", i:1},
+    {t:"Derivamos logaritmo de ye: resultado uno sobre ye.", i:2},
+    {t:"La derivada parcial respecto a ye es uno sobre ye.", i:3},
   ],
+
+  /* ── id:15  f = sen(x²y) ── */
   15:[
-    {t:"Seno de x cuadrado y. El argumento del seno es un producto mixto.", i:-1},
-    {t:"Identificamos u igual a x cuadrado y.", i:0},
-    {t:"Respecto a x: derivada exterior es coseno de x cuadrado y. La derivada interna de x cuadrado y respecto a x: y es constante, derivamos x cuadrado, da dos x ye.", i:1},
-    {t:"Multiplicamos coseno de x cuadrado y, por dos x ye.", i:2},
-    {t:"La derivada respecto a x es dos x y por coseno de x cuadrado y.", i:3},
+    {t:"Identificamos la función compuesta: u igual a x cuadrado ye dentro del seno.", i:0},
+    {t:"Derivada exterior: el coseno del mismo argumento.", i:1},
+    {t:"Derivada interior de x cuadrado ye respecto a x: ye es constante, da dos x ye.", i:2},
+    {t:"Multiplicamos coseno por la derivada interior.", i:3},
+    {t:"La derivada parcial respecto a x es dos x ye por coseno de x cuadrado ye.", i:4},
   ],
   nary15:[
-    {t:"Respecto a y: la derivada interna de x cuadrado y respecto a y: x cuadrado es constante, da x cuadrado.", i:0},
-    {t:"Multiplicamos coseno de x cuadrado y, por x cuadrado.", i:1},
-    {t:"La derivada respecto a y es x cuadrado por coseno de x cuadrado y.", i:2},
+    {t:"Mismo u. Derivamos respecto a ye.", i:0},
+    {t:"Derivada exterior: coseno del mismo argumento.", i:1},
+    {t:"Derivada interior de x cuadrado ye respecto a ye: x cuadrado es constante, da x cuadrado.", i:2},
+    {t:"Multiplicamos coseno por x cuadrado.", i:3},
+    {t:"La derivada parcial respecto a ye es x cuadrado por coseno de x cuadrado ye.", i:4},
   ],
+
+  /* ── id:16  f = cos(3x−2y) ── */
   16:[
-    {t:"Coseno de tres x menos dos y. Argumento lineal mixto.", i:-1},
-    {t:"Identificamos u igual a tres x menos dos y.", i:0},
-    {t:"Respecto a x: la derivada exterior del coseno es menos seno. La derivada interna de tres x menos dos y respecto a x es tres.", i:1},
-    {t:"Multiplicamos menos seno del argumento, por tres.", i:2},
-    {t:"La derivada respecto a x es menos tres seno de tres x menos dos y.", i:3},
+    {t:"Identificamos u igual a tres x menos dos ye dentro del coseno.", i:0},
+    {t:"Derivada exterior: menos el seno del mismo argumento.", i:1},
+    {t:"Derivada interior respecto a x: tres. Multiplicamos.",  i:2},
+    {t:"La derivada parcial respecto a x es menos tres por el seno de tres x menos dos ye.", i:3},
   ],
   nary16:[
-    {t:"Respecto a y: la derivada interna de tres x menos dos y respecto a y es menos dos.", i:0},
-    {t:"Multiplicamos menos seno, por menos dos. Los negativos se cancelan.", i:1},
-    {t:"La derivada respecto a y es dos seno de tres x menos dos y.", i:2},
+    {t:"Mismo u. Derivamos respecto a ye.", i:0},
+    {t:"Derivada exterior: menos el seno del mismo argumento.", i:1},
+    {t:"Derivada interior respecto a ye: menos dos. Multiplicamos: menos seno por menos dos.", i:2},
+    {t:"La derivada parcial respecto a ye es dos por el seno de tres x menos dos ye.", i:3},
   ],
+
+  /* ── id:17  f = x·sen(y) + y·cos(x) ── */
   17:[
-    {t:"Raíz cuadrada de x cuadrado más ye cuadrado. Cadena con la raíz.", i:-1},
-    {t:"Reescribimos la raíz como u a la un medio.", i:0},
-    {t:"Respecto a x: la derivada exterior es un medio por u a la menos un medio. La derivada interna es dos x.", i:1},
-    {t:"Un medio por dos x sobre raíz. El dos se cancela con el medio.", i:2},
-    {t:"La derivada respecto a x es x sobre la raíz de x cuadrado más ye cuadrado.", i:3},
+    {t:"Separamos por linealidad. Cada término es un producto.", i:0},
+    {t:"En x seno de ye: seno de ye es constante. Derivamos x: resultado seno de ye.", i:1},
+    {t:"En ye coseno de x: ye es constante. Derivamos coseno de x: resultado menos ye seno de x.", i:2},
+    {t:"La derivada parcial respecto a x es seno de ye menos ye seno de x.", i:3},
   ],
   nary17:[
-    {t:"Respecto a y: la derivada interna es dos y.", i:0},
-    {t:"Un medio por dos y sobre raíz. El dos se cancela igual.", i:1},
-    {t:"La derivada respecto a y es y sobre la raíz.", i:2},
+    {t:"Separamos por linealidad. Derivamos respecto a ye.", i:0},
+    {t:"En x seno de ye: x es constante. Derivamos seno de ye: resultado x coseno de ye.", i:1},
+    {t:"En ye coseno de x: coseno de x es constante. Derivamos ye: resultado coseno de x.", i:2},
+    {t:"La derivada parcial respecto a ye es x coseno de ye más coseno de x.", i:3},
   ],
+
+  /* ── id:18  f = e^(x²+y²) ── */
   18:[
-    {t:"Producto de tres factores: x cuadrado, y, y e a la x. Usamos la regla del producto.", i:-1},
-    {t:"Respecto a x: y es constante y actúa como coeficiente. Derivamos x cuadrado e a la x con la regla del producto.", i:0},
-    {t:"La derivada de x cuadrado por e a la x es: dos x por e a la x, más x cuadrado por e a la x.", i:1},
-    {t:"Factorizamos e a la x afuera.", i:2},
-    {t:"Multiplicamos por el coeficiente y.", i:3},
-    {t:"La derivada respecto a x es y e a la x por dos x más x cuadrado.", i:4},
+    {t:"Identificamos u igual a x cuadrado más ye cuadrado en el exponente.", i:0},
+    {t:"Aplicamos la cadena. La derivada de e a la u es e a la u por u prima.", i:1},
+    {t:"Derivada interior u prima respecto a x: dos x.", i:2},
+    {t:"La derivada parcial respecto a x es dos x por e a la x cuadrado más ye cuadrado.", i:3},
   ],
   nary18:[
-    {t:"Respecto a y: x cuadrado e a la x es constante. Derivamos y.", i:0},
-    {t:"La derivada de y es uno.", i:1},
-    {t:"La derivada respecto a y es x cuadrado e a la x.", i:2},
+    {t:"Mismo u. Derivamos respecto a ye.", i:0},
+    {t:"La derivada de e a la u es e a la u por u prima.", i:1},
+    {t:"Derivada interior u prima respecto a ye: dos ye.", i:2},
+    {t:"La derivada parcial respecto a ye es dos ye por e a la x cuadrado más ye cuadrado.", i:3},
   ],
+
+  /* ── id:19  f = x/y + y/x ── */
   19:[
-    {t:"Tangente de x sobre y. El argumento es un cociente.", i:-1},
-    {t:"La derivada de tangente de u es secante cuadrada de u, por la derivada interna.", i:0},
-    {t:"Respecto a x: la derivada interna de x sobre y respecto a x es uno sobre y.", i:1},
-    {t:"La derivada respecto a x es secante cuadrada de x sobre y, dividido entre y.", i:2},
+    {t:"Reescribimos como potencias negativas para derivar con facilidad.", i:0},
+    {t:"Derivamos x por ye a la menos uno. ye es constante: resultado uno sobre ye.", i:1},
+    {t:"Derivamos ye por x a la menos uno. ye es constante, derivamos x a la menos uno: resultado menos ye sobre x cuadrado.", i:2},
+    {t:"La derivada parcial respecto a x es uno sobre ye menos ye sobre x cuadrado.", i:3},
   ],
   nary19:[
-    {t:"Respecto a y: la derivada interna de x sobre y respecto a y: x es constante, derivamos ye a la menos uno, da menos x sobre ye cuadrado.", i:0},
-    {t:"La derivada respecto a y es menos x sobre ye cuadrado, multiplicado por secante cuadrada de x sobre y.", i:1},
+    {t:"Misma forma. Derivamos respecto a ye.", i:0},
+    {t:"Derivamos x por ye a la menos uno. x es constante, derivamos ye a la menos uno: resultado menos x sobre ye cuadrado.", i:1},
+    {t:"Derivamos ye por x a la menos uno. x a la menos uno es constante, derivamos ye: resultado uno sobre x.", i:2},
+    {t:"La derivada parcial respecto a ye es menos x sobre ye cuadrado más uno sobre x.", i:3},
   ],
+
+  /* ── id:20  f = arctan(y/x) ── */
   20:[
-    {t:"Cociente con polinomio mixto: x cuadrado sobre ye cuadrado más uno.", i:-1},
-    {t:"Numerador u igual a x cuadrado, denominador v igual a ye cuadrado más uno.", i:0},
-    {t:"Respecto a x: la derivada de u es dos x. La derivada de v respecto a x es cero, porque v solo tiene y.", i:1},
-    {t:"La fórmula del cociente: u prima v menos u v prima, entre v cuadrado.", i:2},
-    {t:"Queda dos x por v cuadrado más uno, menos x cuadrado por cero.", i:3},
-    {t:"El segundo término desaparece.", i:4},
-    {t:"La derivada respecto a x es dos x sobre ye cuadrado más uno.", i:5},
+    {t:"Identificamos u igual a ye sobre x dentro de la arcotangente.", i:0},
+    {t:"La derivada de arcotangente de u es uno sobre uno más u cuadrado, por u prima.", i:1},
+    {t:"Calculamos el denominador uno más u cuadrado con denominador común.", i:2},
+    {t:"Calculamos u prima respecto a x: ye es constante, derivamos x a la menos uno, da menos ye sobre x cuadrado.", i:3},
+    {t:"Sustituimos y simplificamos: los x cuadrado se cancelan.", i:4},
+    {t:"La derivada parcial respecto a x es menos ye sobre x cuadrado más ye cuadrado.", i:5},
   ],
   nary20:[
-    {t:"Respecto a y: la derivada de u respecto a y es cero. La derivada de v es dos y.", i:0},
-    {t:"Queda cero menos x cuadrado por dos y, entre v cuadrado.", i:1},
-    {t:"Simplificamos el primer término que es cero.", i:2},
-    {t:"La derivada respecto a y es menos dos x cuadrado y, sobre la cantidad ye cuadrado más uno al cuadrado.", i:3},
+    {t:"Mismo u. Derivamos respecto a ye.", i:0},
+    {t:"Calculamos el denominador igual que antes.", i:1},
+    {t:"Calculamos u prima respecto a ye: x es constante, da uno sobre x.", i:2},
+    {t:"Sustituimos y simplificamos.", i:3},
+    {t:"Simplificamos la expresión.", i:4},
+    {t:"La derivada parcial respecto a ye es x sobre x cuadrado más ye cuadrado.", i:5},
   ],
+
+  /* ── id:21  f = x²·ln(xy) ── */
   21:[
-    {t:"Logaritmo de la raíz cuadrada de x cuadrado y. Simplificamos con propiedades del logaritmo.", i:-1},
-    {t:"La raíz cuadrada es la potencia un medio. El logaritmo baja el exponente.", i:0},
-    {t:"Queda un medio por logaritmo de x cuadrado y. Separamos: logaritmo de x cuadrado más logaritmo de ye.", i:1},
-    {t:"Respecto a x: derivamos un medio por dos logaritmo de x. La derivada de logaritmo de x es uno sobre x.", i:2},
-    {t:"Un medio por dos sobre x. El dos se cancela con el dos del logaritmo.", i:3},
-    {t:"La derivada respecto a x es uno sobre x.", i:4},
+    {t:"Expandimos el logaritmo: logaritmo de x ye es logaritmo de x más logaritmo de ye.", i:0},
+    {t:"Separamos en dos términos para derivar por linealidad.", i:1},
+    {t:"Derivamos x cuadrado logaritmo de x con la regla del producto. Resultado: dos x logaritmo de x más x.", i:2},
+    {t:"Derivamos x cuadrado logaritmo de ye. ye es constante en logaritmo de ye. Resultado: dos x logaritmo de ye.", i:3},
+    {t:"Sumamos los resultados de ambos términos.", i:4},
+    {t:"La derivada parcial respecto a x es x por la cantidad dos logaritmo de x ye más uno.", i:5},
   ],
   nary21:[
-    {t:"Respecto a y: solo el término un medio por logaritmo de y tiene y.", i:0},
-    {t:"La derivada de logaritmo de y es uno sobre y. Multiplicamos por un medio.", i:1},
-    {t:"La derivada respecto a y es uno sobre dos y.", i:2},
+    {t:"Usamos la forma expandida.", i:0},
+    {t:"El término con logaritmo de x no tiene ye. Da cero.", i:1},
+    {t:"Derivamos x cuadrado logaritmo de ye. x cuadrado es constante. Derivamos logaritmo de ye: uno sobre ye.", i:2},
+    {t:"La derivada parcial respecto a ye es x cuadrado sobre ye.", i:3},
   ],
+
+  /* ── id:22  f = eˣ·sen(y) + x²·cos(y) ── */
   22:[
-    {t:"Coseno al cuadrado de x ye. Doble cadena: la potencia y el coseno.", i:-1},
-    {t:"Identificamos f igual a u cuadrado, donde u es coseno de x ye.", i:0},
-    {t:"Respecto a x: primera cadena, la derivada de u cuadrado es dos u por u prima.", i:1},
-    {t:"Segunda cadena, la derivada del coseno de x y es menos seno de x ye, por la derivada interna y.", i:2},
-    {t:"Multiplicamos: dos coseno de x ye, por menos seno de x ye, por ye.", i:3},
-    {t:"Usamos la identidad dos seno coseno igual a seno del ángulo doble.", i:4},
-    {t:"La derivada respecto a x es menos y seno de dos x ye.", i:5},
+    {t:"Separamos por linealidad en dos términos.", i:0},
+    {t:"En e a la x por seno de ye: seno de ye es constante. Derivamos e a la x: resultado e a la x seno de ye.", i:1},
+    {t:"En x cuadrado por coseno de ye: coseno de ye es constante. Derivamos x cuadrado: resultado dos x coseno de ye.", i:2},
+    {t:"La derivada parcial respecto a x es e a la x seno de ye más dos x coseno de ye.", i:3},
   ],
   nary22:[
-    {t:"Respecto a y: misma doble cadena. La derivada interna de x y respecto a y es x.", i:0},
-    {t:"Multiplicamos: dos coseno de x ye, por menos seno de x ye, por x.", i:1},
-    {t:"La derivada respecto a y es menos x seno de dos x ye.", i:2},
+    {t:"Separamos igual. Derivamos respecto a ye.", i:0},
+    {t:"En e a la x por seno de ye: e a la x es constante. Derivamos seno de ye: resultado e a la x coseno de ye.", i:1},
+    {t:"En x cuadrado por coseno de ye: x cuadrado es constante. Derivamos coseno de ye: resultado menos x cuadrado seno de ye.", i:2},
+    {t:"La derivada parcial respecto a ye es e a la x coseno de ye menos x cuadrado seno de ye.", i:3},
   ],
+
+  /* ── id:23  f = ln(x²+y²) ── */
   23:[
-    {t:"Dos términos mixtos: x cuadrado ye cuadrado más x al cubo.", i:-1},
-    {t:"Respecto a x: en el primer término, ye cuadrado es el coeficiente. Derivamos x cuadrado, da dos x.", i:0},
-    {t:"En el segundo término, derivamos x al cubo, da tres x cuadrado.", i:1},
-    {t:"Sumamos los resultados.", i:2},
-    {t:"La derivada respecto a x es dos x ye cuadrado más tres x cuadrado.", i:3},
+    {t:"Identificamos u igual a x cuadrado más ye cuadrado.", i:0},
+    {t:"Calculamos u prima respecto a x: dos x.", i:1},
+    {t:"Sustituimos: uno sobre u multiplicado por dos x.", i:2},
+    {t:"La derivada parcial respecto a x es dos x sobre x cuadrado más ye cuadrado.", i:3},
   ],
   nary23:[
-    {t:"Respecto a y: en el primer término, x cuadrado es el coeficiente. Derivamos ye cuadrado, da dos y.", i:0},
-    {t:"El segundo término x al cubo no tiene y, su derivada es cero.", i:1},
-    {t:"La derivada respecto a y es dos x cuadrado y.", i:2},
+    {t:"Mismo u. Derivamos respecto a ye.", i:0},
+    {t:"Calculamos u prima respecto a ye: dos ye.", i:1},
+    {t:"Sustituimos: uno sobre u multiplicado por dos ye.", i:2},
+    {t:"La derivada parcial respecto a ye es dos ye sobre x cuadrado más ye cuadrado.", i:3},
   ],
+
+  /* ── id:24  f = (x²−y²)/(x²+y²) ── */
   24:[
-    {t:"Cociente con polinomios mixtos: x cuadrado menos ye cuadrado, sobre x cuadrado más ye cuadrado.", i:-1},
-    {t:"Identificamos u igual a x cuadrado menos ye cuadrado, v igual a x cuadrado más ye cuadrado.", i:0},
-    {t:"Respecto a x: u prima es dos x, v prima también es dos x.", i:1},
-    {t:"Aplicamos la fórmula del cociente: dos x por v, menos u por dos x.", i:2},
-    {t:"Factorizamos dos x. Adentro queda v menos u, que es dos ye cuadrado.", i:3},
-    {t:"Dividimos todo entre v cuadrado.", i:4},
-    {t:"La derivada respecto a x es cuatro x ye cuadrado sobre v al cuadrado.", i:5},
+    {t:"Identificamos numerador u y denominador v.", i:0},
+    {t:"Calculamos u prima y v prima respecto a x.", i:1},
+    {t:"Aplicamos la fórmula del cociente: u prima v menos u v prima.", i:2},
+    {t:"Factorizamos dos x. Adentro queda v menos u, que simplifica a dos ye cuadrado.", i:3},
+    {t:"Dividimos entre v cuadrado.", i:4},
+    {t:"La derivada parcial respecto a x es cuatro x ye cuadrado sobre el denominador al cuadrado.", i:5},
   ],
   nary24:[
-    {t:"Respecto a y: u prima es menos dos y, v prima es dos y.", i:0},
-    {t:"Aplicamos la fórmula. Factorizamos menos dos y.", i:1},
-    {t:"Adentro queda v más u, que es dos x cuadrado.", i:2},
-    {t:"Dividimos entre v cuadrado.", i:3},
-    {t:"La derivada respecto a y es menos cuatro x cuadrado y sobre v al cuadrado.", i:4},
+    {t:"Mismo u y v. Derivamos respecto a ye.", i:0},
+    {t:"Calculamos u prima y v prima respecto a ye.", i:1},
+    {t:"Aplicamos la fórmula del cociente.", i:2},
+    {t:"Factorizamos menos dos ye. Adentro queda dos x cuadrado.", i:3},
+    {t:"Dividimos entre v cuadrado.", i:4},
+    {t:"La derivada parcial respecto a ye es menos cuatro x cuadrado ye sobre el denominador al cuadrado.", i:5},
   ],
+
+  /* ── id:25  f = x^(2/3)·y^(3/2) ── */
   25:[
-    {t:"Potencias fraccionarias: x a los dos tercios por y a los tres medios.", i:-1},
-    {t:"Respecto a x: y a los tres medios es el coeficiente. Derivamos x a los dos tercios.", i:0},
-    {t:"Dos tercios menos uno es menos un tercio. El coeficiente que baja es dos tercios.", i:1},
-    {t:"Multiplicamos por el coeficiente y a los tres medios.", i:2},
-    {t:"La derivada respecto a x es dos tercios por x a la menos un tercio por y a los tres medios.", i:3},
+    {t:"ye a los tres medios actúa como coeficiente constante. Derivamos x a los dos tercios.", i:0},
+    {t:"Aplicamos la regla de la potencia. El nuevo exponente es dos tercios menos uno: menos un tercio.", i:1},
+    {t:"Sustituimos el resultado en la expresión completa.", i:2},
+    {t:"La derivada parcial respecto a x es dos tercios por x a la menos un tercio por ye a los tres medios.", i:3},
   ],
   nary25:[
-    {t:"Respecto a y: x a los dos tercios es el coeficiente. Derivamos y a los tres medios.", i:0},
-    {t:"Tres medios menos uno es un medio. El coeficiente que baja es tres medios.", i:1},
-    {t:"La derivada respecto a y es tres medios por x a los dos tercios por ye a la un medio.", i:2},
+    {t:"x a los dos tercios actúa como coeficiente constante. Derivamos ye a los tres medios.", i:0},
+    {t:"Nuevo exponente: tres medios menos uno es un medio. Coeficiente que baja: tres medios.", i:1},
+    {t:"Sustituimos.", i:2},
+    {t:"La derivada parcial respecto a ye es tres medios por x a los dos tercios por ye a la un medio.", i:3},
   ],
+
+  /* ── id:26  f = sen²(xy) ── */
   26:[
-    {t:"Seno al cuadrado de x ye. Doble cadena: la potencia cuadrada y el seno.", i:-1},
-    {t:"Identificamos f igual a u cuadrado, donde u es seno de x ye.", i:0},
-    {t:"Respecto a x: primera cadena da dos seno de x ye, por la derivada del seno.", i:1},
-    {t:"Segunda cadena: la derivada del seno de x y es coseno de x ye, por la derivada interna.", i:2},
-    {t:"La derivada interna de x y respecto a x es y.", i:3},
-    {t:"Multiplicamos las tres piezas: dos seno, coseno, y y.", i:4},
-    {t:"Usamos la identidad: dos seno coseno del mismo argumento es seno del ángulo doble.", i:5},
-    {t:"La derivada respecto a x es y por seno de dos x ye.", i:6},
+    {t:"Identificamos f igual a u cuadrado, donde u es seno de x ye. Doble cadena.", i:0},
+    {t:"Primera cadena sobre la potencia: derivada exterior dos u, es decir dos seno de x ye.", i:1},
+    {t:"Segunda cadena sobre el seno: derivada del seno de x ye es coseno de x ye por la derivada interior.", i:2},
+    {t:"Derivada interior de x ye respecto a x: ye.", i:3},
+    {t:"Reunimos las tres piezas: dos, seno de x ye, coseno de x ye, y ye.", i:4},
+    {t:"Aplicamos la identidad: dos seno coseno del mismo argumento es el seno del doble.", i:5},
+    {t:"La derivada parcial respecto a x es ye por seno de dos x ye.", i:6},
   ],
   nary26:[
-    {t:"Respecto a y: exactamente el mismo proceso. La derivada interna de x y respecto a y es x.", i:0},
-    {t:"La derivada respecto a y es x por seno de dos x ye.", i:1},
+    {t:"Misma estructura. Doble cadena respecto a ye.", i:0},
+    {t:"Derivada interior de x ye respecto a ye: x.", i:1},
+    {t:"Sustituimos y aplicamos la identidad igual que antes.", i:2},
+    {t:"La derivada parcial respecto a ye es x por seno de dos x ye.", i:3},
   ],
+
+  /* ── id:27  f = e^(x/y) ── */
   27:[
-    {t:"Exponencial con cociente como argumento: e a la x sobre y.", i:-1},
-    {t:"Identificamos u igual a x sobre y.", i:0},
-    {t:"Respecto a x: la derivada de e a la u es e a la u por u prima. La derivada de x sobre y respecto a x: y es constante, da uno sobre y.", i:1},
-    {t:"La derivada interna es uno sobre y.", i:2},
-    {t:"La derivada respecto a x es e a la x sobre y, dividido entre y.", i:3},
+    {t:"Identificamos u igual a x sobre ye.", i:0},
+    {t:"Aplicamos la cadena. La derivada de e a la u es e a la u por u prima.", i:1},
+    {t:"Derivada interior de x sobre ye respecto a x: ye es constante, da uno sobre ye.", i:2},
+    {t:"La derivada parcial respecto a x es e a la x sobre ye dividido entre ye.", i:3},
   ],
   nary27:[
-    {t:"Respecto a y: la derivada de x sobre y respecto a y. X es constante, derivamos ye a la menos uno.", i:0},
-    {t:"La derivada de ye a la menos uno es menos ye a la menos dos. Queda menos x sobre ye cuadrado.", i:1},
-    {t:"La derivada respecto a y es menos x sobre ye cuadrado, multiplicado por e a la x sobre y.", i:2},
+    {t:"Mismo u. Derivamos respecto a ye.", i:0},
+    {t:"Aplicamos la cadena.", i:1},
+    {t:"Derivada interior de x sobre ye respecto a ye. Reescribimos como x ye a la menos uno. La derivada da menos x sobre ye cuadrado.", i:2},
+    {t:"La derivada parcial respecto a ye es menos x sobre ye cuadrado, multiplicado por e a la x sobre ye.", i:3},
   ],
+
+  /* ── id:28  f = x·arcsen(y/x) ── */
   28:[
-    {t:"Producto con arcoseno: x por arcoseno de y sobre x. Uno de los más complejos.", i:-1},
-    {t:"Aplicamos la regla del producto: u igual a x, v igual a arcoseno de y sobre x.", i:0},
-    {t:"U prima es uno. Para v prima aplicamos la cadena: la derivada del arcoseno de u es uno sobre raíz de uno menos u cuadrado.", i:1},
-    {t:"La derivada interna de y sobre x respecto a x: y es constante, derivamos x a la menos uno, da menos y sobre x cuadrado.", i:2},
-    {t:"Simplificamos la raíz usando denominador común.", i:3},
-    {t:"Raíz de x cuadrado menos ye cuadrado sobre x. La expresamos con x abajo.", i:4},
-    {t:"Calculamos v prima combinando los factores.", i:5},
+    {t:"Identificamos u igual a x y v igual a arcoseno de ye sobre x. Regla del producto.", i:0},
+    {t:"u prima es uno. Para v prima necesitamos la cadena del arcoseno.", i:1},
+    {t:"Derivada del arcoseno de su argumento: uno sobre raíz de uno menos el argumento al cuadrado.", i:2},
+    {t:"Derivada interior de ye sobre x respecto a x: da menos ye sobre x cuadrado.", i:3},
+    {t:"Simplificamos la raíz: uno menos ye cuadrado sobre x cuadrado da raíz de x cuadrado menos ye cuadrado sobre x.", i:4},
+    {t:"Obtenemos v prima combinando los factores.", i:5},
     {t:"Aplicamos la fórmula del producto: u prima v más u v prima.", i:6},
-    {t:"La derivada respecto a x es arcoseno de y sobre x, menos y sobre raíz de x cuadrado menos ye cuadrado.", i:7},
+    {t:"La derivada parcial respecto a x es arcoseno de ye sobre x menos ye sobre raíz de x cuadrado menos ye cuadrado.", i:7},
   ],
   nary28:[
-    {t:"Respecto a y: x actúa como coeficiente constante afuera.", i:0},
-    {t:"Derivamos arcoseno de y sobre x respecto a y. La derivada interna de y sobre x respecto a y es uno sobre x.", i:1},
+    {t:"x actúa como coeficiente constante afuera.", i:0},
+    {t:"Derivamos arcoseno de ye sobre x. La derivada interior respecto a ye es uno sobre x.", i:1},
     {t:"Simplificamos el denominador igual que antes.", i:2},
     {t:"Multiplicamos por x afuera. Los x se cancelan.", i:3},
-    {t:"La derivada respecto a y es x sobre raíz de x cuadrado menos ye cuadrado.", i:4},
+    {t:"La derivada parcial respecto a ye es x sobre raíz de x cuadrado menos ye cuadrado.", i:4},
   ],
+
+  /* ── id:29  f = ln(x+√(x²+y²)) ── */
   29:[
-    {t:"El ejercicio de mayor complejidad: logaritmo natural de x más raíz de x cuadrado más ye cuadrado.", i:-1},
-    {t:"Llamamos u al argumento del logaritmo: x más la raíz.", i:0},
-    {t:"La derivada del logaritmo de u es uno sobre u, multiplicado por la derivada de u.", i:1},
-    {t:"La derivada de u respecto a x es uno, más la derivada de la raíz de x cuadrado más ye cuadrado.", i:2},
-    {t:"La derivada de la raíz respecto a x: aplicamos la cadena, da x sobre la raíz.", i:3},
-    {t:"La derivada de u queda como raíz más x, todo sobre la raíz. Con denominador común.", i:4},
-    {t:"Multiplicamos uno sobre u por eso. El factor raíz más x aparece arriba y abajo. Se cancela.", i:5},
-    {t:"Resultado limpio: uno sobre raíz de x cuadrado más ye cuadrado.", i:6},
+    {t:"Llamamos u al argumento completo del logaritmo.", i:0},
+    {t:"La derivada del logaritmo de u es uno sobre u por la derivada de u.", i:1},
+    {t:"La derivada de u respecto a x: uno, más la derivada de la raíz de x cuadrado más ye cuadrado.", i:2},
+    {t:"La derivada de esa raíz respecto a x, por la cadena, es x sobre la raíz.", i:3},
+    {t:"La derivada de u queda como raíz más x, todo sobre la raíz.", i:4},
+    {t:"Multiplicamos uno sobre u por ese resultado. El factor x más raíz aparece arriba y abajo y se cancela.", i:5},
+    {t:"La derivada parcial respecto a x es uno sobre la raíz de x cuadrado más ye cuadrado.", i:6},
   ],
   nary29:[
-    {t:"Respecto a y: la derivada de u. La derivada de x es cero. La derivada de la raíz respecto a y es y sobre la raíz.", i:0},
-    {t:"La derivada de u es y sobre la raíz.", i:1},
-    {t:"Multiplicamos uno sobre u por y sobre la raíz.", i:2},
-    {t:"La derivada respecto a y es y sobre la cantidad x más raíz, multiplicado por la raíz.", i:3},
+    {t:"Mismo u. Derivamos respecto a ye.", i:0},
+    {t:"La derivada de u respecto a ye: x no cambia, da cero. La raíz da ye sobre la raíz por la cadena.", i:1},
+    {t:"La derivada de u es ye sobre la raíz. Sustituimos.", i:2},
+    {t:"Multiplicamos uno sobre u por ye sobre la raíz.", i:3},
+    {t:"La derivada parcial respecto a ye es ye sobre la cantidad x más raíz, multiplicado por la raíz.", i:4},
   ],
 };
 
 function buildNarration(ex){
   const id = ex.id;
   const linesX = NARRATION[id]        || [{t:'Calculamos la derivada respecto a x.', i:-1}];
-  const linesY = NARRATION['nary'+id] || [{t:'Calculamos la derivada respecto a y.', i:-1}];
+  const linesY = NARRATION['nary'+id] || [{t:'Calculamos la derivada respecto a ye.', i:-1}];
 
   const lines = [];
-  lines.push({t:'¡Hola! Soy Edwin Ríos, tu profe de Matemáticas Tres en la UDI.', i:-1});
-  lines.push({t:'Empecemos con la derivada parcial respecto a x. La y la tratamos como constante.', i:-1});
+
+  /* Saludo solo la primera vez que el estudiante escucha */
+  if(!greetingDone){
+    lines.push({t:'Hola, soy Eduin Ríos, tu profe de Matemáticas Tres en la údi.', i:-1});
+    greetingDone = true;
+  }
+
+  lines.push({t:'Empecemos con la derivada parcial respecto a x. La ye la tratamos como constante.', i:-1});
   linesX.forEach(l => lines.push({t:l.t, i:l.i, side:'x'}));
-  lines.push({t:'Muy bien. Ahora la derivada respecto a y. Esta vez la x es la constante.', i:-1});
+  lines.push({t:'Muy bien. Ahora la derivada respecto a ye. Esta vez la x es la constante.', i:-1});
   linesY.forEach(l => lines.push({t:l.t, i:l.i, side:'y'}));
-  lines.push({t:'¡Listo! Las dos derivadas parciales calculadas. Recuerda: cada una mide el cambio de la función en una sola dirección.', i:-2});
+  lines.push({t:'Listo. Las dos derivadas parciales calculadas.', i:-2});
   return lines;
 }
 
@@ -2047,6 +2172,9 @@ function speakNext(){
     return txt
       /* UDI con acento en la U */
       .replace(/\bUDI\b/g, 'údi')
+      /* Edwin: la W suena rara en TTS español → "Eduin" */
+      .replace(/\bEdwin\b/g, 'Eduin')
+      .replace(/\bEDWIN\b/g, 'Eduin')
       /* "y" variable matemática → "ye" en todos los contextos */
       .replace(/\brespecto a y\b/gi,  'respecto a ye')
       .replace(/\bde la y\b/gi,       'de la ye')
